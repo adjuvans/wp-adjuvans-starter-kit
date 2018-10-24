@@ -1,10 +1,7 @@
 #!/bin/sh
 
-# WordPress install script - by Cyrille de Gourcy
-# Make sure you have wp-cli.phar installed and up to date on the same directory
-
-# Var
-project_name=jc-wines.com
+# parameters
+project_name=<PROJECT NAME>
 directory_log=logs
 directory_public=wordpress
 file_wpcli_config=wp-cli.yml
