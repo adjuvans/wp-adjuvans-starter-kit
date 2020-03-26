@@ -1,11 +1,13 @@
 #!/bin/sh
 
-# parameters
+# WordPress install script - by Cyrille de Gourcy
+# Make sure you have WP-CLI installed on environment and up to date
+
 project_name=<PROJECT NAME>
 directory_log=logs
 directory_public=wordpress
+directory_backup=backups
 file_wpcli_config=wp-cli.yml
-file_wpcli_phar=wp-cli.phar
 
 # check if stdout is a terminal...
 if test -t 1; then
@@ -58,13 +60,6 @@ else
     echo "Config file ${green}${file_wpcli_config}${normal} have been created & maked executable."
 fi
 
-# Make executable WP-CLI
-if [ -e "${file_wpcli_phar}" ]; then
-    chmod 700 ${file_wpcli_phar}
-    echo "The file ${green}${file_wpcli_phar}${normal} have been maked executable."
-
-fi
-
 echo " "
 echo "---"
 echo "${blue}${bold}# PUBLIC DIRECTORY${normal}"
@@ -72,12 +67,12 @@ echo "${blue}${bold}# PUBLIC DIRECTORY${normal}"
 if [ -d "${directory_public}" ]; then
     # change rights on directories
     find ${directory_public} -type d -exec chmod -R 755 {} \;
-    echo "Rights of the directories in ${green}/${directory_public}${normal} have been changed."
+    echo "Rights of the directories in ${green}/${directory_public}${normal} have been changed to ${green}755${normal}."
 
 
     # change rights on files
     find ${directory_public} -type f -exec chmod -R 644 {} \;
-    echo "Rights of the files in ${green}/${directory_public}${normal} have been changed."
+    echo "Rights of the files in ${green}/${directory_public}${normal} have been changed to ${green}644${normal}."
 else
     echo "${red}The directory /${directory_public} doesn't exist!${normal}"
 fi
@@ -89,9 +84,26 @@ echo "${blue}${bold}# LOGS DIRECTORY${normal}"
 if [ -d "${directory_log}" ]; then
     # change rights on directories
     chmod 755 ${directory_log}
-    echo "Rights of the directory ${green}/${directory_log}${normal} have been changed."
+    echo "Rights of the directories ${green}/${directory_log}${normal} have been changed to ${green}755${normal}."
 else
     echo "${red}The directory /${directory_log} doesn't exist!${normal}"
-    echo "${red}Please check the repository of the project.${normal}"
+    echo "I'll create it."
+    mkdir -m 755 ${directory_log}
+    echo "The directory ${green}/${directory_log}${normal} have been created in ${green}755${normal} mode."
+fi
+
+echo " "
+echo "---"
+echo "${blue}${bold}# BACKUPS DIRECTORY${normal}"
+# Change rights on files & directories
+if [ -d "${directory_backup}" ]; then
+    # change rights on directories
+    find ${directory_backup} -type d -exec chmod -R 755 {} \;
+    echo "Rights of the directories in ${green}/${directory_backup}${normal} have been changed to ${green}755${normal}."
+else
+    echo "${red}The directory /${directory_backup} doesn't exist!${normal}"
+    echo "I'll create it."
+    mkdir -m 755 ${directory_backup}
+    echo "The directory ${green}/${directory_backup}${normal} have been created in ${green}755${normal} mode."
 fi
 echo "---"
