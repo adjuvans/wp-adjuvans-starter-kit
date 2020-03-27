@@ -1,11 +1,12 @@
 #!/bin/sh
 
 # parameters
-project_name=<PROJECT NAME>
-directory_log=logs
+project_name=<PROJECT_NAME>
 directory_public=wordpress
 file_wpcli_config=wp-cli.yml
-file_wpcli_phar=wp-cli.phar
+#file_wpcli_phar=wp-cli.phar
+directory_backup=backups
+directory_log=logs
 
 # check if stdout is a terminal...
 if test -t 1; then
@@ -92,6 +93,20 @@ if [ -d "${directory_log}" ]; then
     echo "Rights of the directory ${green}/${directory_log}${normal} have been changed."
 else
     echo "${red}The directory /${directory_log} doesn't exist!${normal}"
+    echo "${red}Please check the repository of the project.${normal}"
+fi
+echo "---"
+
+echo " "
+echo "---"
+echo "${blue}${bold}# BACKUPS DIRECTORY${normal}"
+# Change rights on files & directories
+if [ -d "${directory_backup}" ]; then
+    # change rights on directories
+    chmod 755 ${directory_backup}
+    echo "Rights of the directory ${green}/${directory_backup}${normal} have been changed."
+else
+    echo "${red}The directory /${directory_backup} doesn't exist!${normal}"
     echo "${red}Please check the repository of the project.${normal}"
 fi
 echo "---"
