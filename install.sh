@@ -107,3 +107,17 @@ else
     echo "The directory ${green}/${directory_backup}${normal} have been created in ${green}755${normal} mode."
 fi
 echo "---"
+
+echo " "
+echo "---"
+echo "${blue}${bold}# BACKUPS DIRECTORY${normal}"
+# Change rights on files & directories
+if [ -d "${directory_backup}" ]; then
+    # change rights on directories
+    chmod 755 ${directory_backup}
+    echo "Rights of the directory ${green}/${directory_backup}${normal} have been changed."
+else
+    echo "${red}The directory /${directory_backup} doesn't exist!${normal}"
+    echo "${red}Please check the repository of the project.${normal}"
+fi
+echo "---"
