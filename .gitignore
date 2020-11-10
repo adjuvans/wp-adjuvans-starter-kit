@@ -36,3 +36,4 @@ nbproject
 *.zip
 *.tar.gz
 *~
+wp-cli.phar
