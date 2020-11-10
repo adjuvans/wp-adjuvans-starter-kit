@@ -3,34 +3,7 @@
 # WordPress install script - by Cyrille de Gourcy
 # Make sure you have WP-CLI installed on environment and up to date
 
-project_name=PROJECT_NAME
-directory_log=logs
-directory_public=wordpress
-directory_backup=backups
-file_wpcli_phar=wp-cli.phar
-file_wpcli_config=wp-cli.yml
-
-# check if stdout is a terminal...
-if test -t 1; then
-    # see if it supports colors...
-    ncolors=$(tput colors)
-    if test -n "$ncolors" && test $ncolors -ge 8; then
-        bold="$(tput bold)"
-        underline="$(tput smul)"
-        standout="$(tput smso)"
-        normal="$(tput sgr0)"
-        black="$(tput setaf 0)"
-        red="$(tput setaf 1)"
-        green="$(tput setaf 2)"
-        yellow="$(tput setaf 3)"
-        blue="$(tput setaf 4)"
-        magenta="$(tput setaf 5)"
-        cyan="$(tput setaf 6)"
-        white="$(tput setaf 7)"
-    fi
-fi
-
-clear
+source config.sh
 
 echo "${standout}
 
@@ -43,7 +16,7 @@ echo "${standout}
 #   ╚═════╝╚═════╝  ╚═════╝     ╚══════╝╚═╝  ╚═╝╚═════╝ ╚══════╝
 #
 ${normal}
-${yellow}Install script for ${green}${project_name}
+${yellow}Init script for ${green}${project_name}
 ${yellow}> Cyrille de Gourcy ${green}<cyrille@gourcy.net>${normal}
 ${yellow}> https://cyrille.de.gourcy.net${normal}"
 
@@ -77,9 +50,15 @@ if [ ! -d "${directory_public}" ]; then
     echo "${blue}${bold}# WORDPRESS${normal}"
     echo "Installing WordPress"
     php wp-cli.phar core download --locale=fr_FR
-    #git clone https://github.com/WordPress/WordPress.git ${directory_public}
-    #echo "Deleting .git from WordPress repo"
-    #rm -rf ${directory_public}/.git
+
+    echo "Installing plugins"
+    php wp-cli.phar plugin install query-monitor
+    php wp-cli.phar plugin install maintenance
+    php wp-cli.phar plugin install loco-translate
+    php wp-cli.phar plugin install contact-form-7
+    php wp-cli.phar plugin install redirection
+    php wp-cli.phar plugin install duplicate-post
+    php wp-cli.phar plugin install wordpress-seo
 fi
 
 echo " "
