@@ -52,14 +52,14 @@ echo "---"
 echo "${blue}${bold}# WP-CLI${normal}"
 if [ -e "${file_wpcli_phar}" ]; then
     chmod 700 ${file_wpcli_phar}
-    echo "Config file ${green}${file_wpcli_phar}${normal} have been maked executable."
+    echo "WP-CLI ${green}${file_wpcli_phar}${normal} have been maked executable."
 else
     echo "Installing WP-CLI"
     curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
     chmod 700 ${file_wpcli_phar}
-    echo "Config file ${green}${file_wpcli_phar}${normal} have been created & maked executable."
+    echo "WP-CLI ${green}${file_wpcli_phar}${normal} have been created & maked executable."
 fi
-php wp-cli.phar --info
+
 # Create config file for WP-CLI
 if [ -e "${file_wpcli_config}" ]; then
     chmod 700 ${file_wpcli_config}
@@ -71,14 +71,15 @@ else
 fi
 
 # Get WordPress Sources
-if [ ! -d "${directory_public}" ]
+if [ ! -d "${directory_public}" ]; then
     echo " "
     echo "---"
     echo "${blue}${bold}# WORDPRESS${normal}"
-    echo "Cloning WordPress repository"
-    git clone https://github.com/WordPress/WordPress.git ${directory_public}
-    echo "Deleting .git from WordPress repo"
-    rm -rf ${directory_public}/.git
+    echo "Installing WordPress"
+    php wp-cli.phar core download --locale=fr_FR
+    #git clone https://github.com/WordPress/WordPress.git ${directory_public}
+    #echo "Deleting .git from WordPress repo"
+    #rm -rf ${directory_public}/.git
 fi
 
 echo " "
@@ -126,19 +127,5 @@ else
     echo "I'll create it."
     mkdir -m 755 ${directory_backup}
     echo "The directory ${green}/${directory_backup}${normal} have been created in ${green}755${normal} mode."
-fi
-echo "---"
-
-echo " "
-echo "---"
-echo "${blue}${bold}# BACKUPS DIRECTORY${normal}"
-# Change rights on files & directories
-if [ -d "${directory_backup}" ]; then
-    # change rights on directories
-    chmod 755 ${directory_backup}
-    echo "Rights of the directory ${green}/${directory_backup}${normal} have been changed."
-else
-    echo "${red}The directory /${directory_backup} doesn't exist!${normal}"
-    echo "${red}Please check the repository of the project.${normal}"
 fi
 echo "---"
