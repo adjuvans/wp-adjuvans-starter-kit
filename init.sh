@@ -3,10 +3,11 @@
 # WordPress install script - by Cyrille de Gourcy
 # Make sure you have WP-CLI installed on environment and up to date
 
-project_name=<PROJECT NAME>
+project_name=PROJECT_NAME
 directory_log=logs
 directory_public=wordpress
 directory_backup=backups
+file_wpcli_phar=wp-cli.phar
 file_wpcli_config=wp-cli.yml
 
 # check if stdout is a terminal...
@@ -33,23 +34,32 @@ clear
 
 echo "${standout}
 
-#                                                                
-#   ██████╗██████╗  ██████╗     ██╗      █████╗ ██████╗ ███████╗ 
-#  ██╔════╝██╔══██╗██╔════╝     ██║     ██╔══██╗██╔══██╗██╔════╝ 
-#  ██║     ██║  ██║██║  ███╗    ██║     ███████║██████╔╝███████╗ 
-#  ██║     ██║  ██║██║   ██║    ██║     ██╔══██║██╔══██╗╚════██║ 
-#  ╚██████╗██████╔╝╚██████╔╝    ███████╗██║  ██║██████╔╝███████║ 
-#   ╚═════╝╚═════╝  ╚═════╝     ╚══════╝╚═╝  ╚═╝╚═════╝ ╚══════╝ 
-#                                                                
+#
+#   ██████╗██████╗  ██████╗     ██╗      █████╗ ██████╗ ███████╗
+#  ██╔════╝██╔══██╗██╔════╝     ██║     ██╔══██╗██╔══██╗██╔════╝
+#  ██║     ██║  ██║██║  ███╗    ██║     ███████║██████╔╝███████╗
+#  ██║     ██║  ██║██║   ██║    ██║     ██╔══██║██╔══██╗╚════██║
+#  ╚██████╗██████╔╝╚██████╔╝    ███████╗██║  ██║██████╔╝███████║
+#   ╚═════╝╚═════╝  ╚═════╝     ╚══════╝╚═╝  ╚═╝╚═════╝ ╚══════╝
+#
 ${normal}
 ${yellow}Install script for ${green}${project_name}
 ${yellow}> Cyrille de Gourcy ${green}<cyrille@gourcy.net>${normal}
 ${yellow}> https://cyrille.de.gourcy.net${normal}"
 
-
 echo " "
 echo "---"
 echo "${blue}${bold}# WP-CLI${normal}"
+if [ -e "${file_wpcli_phar}" ]; then
+    chmod 700 ${file_wpcli_phar}
+    echo "Config file ${green}${file_wpcli_phar}${normal} have been maked executable."
+else
+    echo "Installing WP-CLI"
+    curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+    chmod 700 ${file_wpcli_phar}
+    echo "Config file ${green}${file_wpcli_phar}${normal} have been created & maked executable."
+fi
+php wp-cli.phar --info
 # Create config file for WP-CLI
 if [ -e "${file_wpcli_config}" ]; then
     chmod 700 ${file_wpcli_config}
@@ -58,6 +68,17 @@ else
     echo "path: ${directory_public}" | tee ${file_wpcli_config}
     chmod 700 ${file_wpcli_config}
     echo "Config file ${green}${file_wpcli_config}${normal} have been created & maked executable."
+fi
+
+# Get WordPress Sources
+if [ ! -d "${directory_public}" ]
+    echo " "
+    echo "---"
+    echo "${blue}${bold}# WORDPRESS${normal}"
+    echo "Cloning WordPress repository"
+    git clone https://github.com/WordPress/WordPress.git ${directory_public}
+    echo "Deleting .git from WordPress repo"
+    rm -rf ${directory_public}/.git
 fi
 
 echo " "
