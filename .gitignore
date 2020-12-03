@@ -22,6 +22,12 @@ node_modules/
 *.sql
 *.sqlite
 
+# ignore some directories
+backups/
+!backups/.ok
+logs/
+!logs/.ok
+
 # ignore some files
 *.git
 *.svn
