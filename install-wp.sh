@@ -1,22 +1,5 @@
 #!/bin/sh
-
 source config.sh
-
-echo "${standout}
-
-#
-#   ██████╗██████╗  ██████╗     ██╗      █████╗ ██████╗ ███████╗
-#  ██╔════╝██╔══██╗██╔════╝     ██║     ██╔══██╗██╔══██╗██╔════╝
-#  ██║     ██║  ██║██║  ███╗    ██║     ███████║██████╔╝███████╗
-#  ██║     ██║  ██║██║   ██║    ██║     ██╔══██║██╔══██╗╚════██║
-#  ╚██████╗██████╔╝╚██████╔╝    ███████╗██║  ██║██████╔╝███████║
-#   ╚═════╝╚═════╝  ╚═════╝     ╚══════╝╚═╝  ╚═╝╚═════╝ ╚══════╝
-#
-${normal}
-${yellow}Install script for WordPress for project ${green}${project_name}
-${yellow}> Cyrille de Gourcy ${green}<cyrille@gourcy.net>${normal}
-${yellow}> https://cyrille.de.gourcy.net${normal}"
-
 
 echo "${blue}${bold}# WORDPRESS${normal}"
 

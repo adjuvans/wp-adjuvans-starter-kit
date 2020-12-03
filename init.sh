@@ -1,24 +1,5 @@
 #!/bin/sh
-
-# WordPress install script - by Cyrille de Gourcy
-# Make sure you have WP-CLI installed on environment and up to date
-
 source config.sh
-
-echo "${standout}
-
-#
-#   ██████╗██████╗  ██████╗     ██╗      █████╗ ██████╗ ███████╗
-#  ██╔════╝██╔══██╗██╔════╝     ██║     ██╔══██╗██╔══██╗██╔════╝
-#  ██║     ██║  ██║██║  ███╗    ██║     ███████║██████╔╝███████╗
-#  ██║     ██║  ██║██║   ██║    ██║     ██╔══██║██╔══██╗╚════██║
-#  ╚██████╗██████╔╝╚██████╔╝    ███████╗██║  ██║██████╔╝███████║
-#   ╚═════╝╚═════╝  ╚═════╝     ╚══════╝╚═╝  ╚═╝╚═════╝ ╚══════╝
-#
-${normal}
-${yellow}Init script for ${green}${project_name}
-${yellow}> Cyrille de Gourcy ${green}<cyrille@gourcy.net>${normal}
-${yellow}> https://cyrille.de.gourcy.net${normal}"
 
 echo " "
 echo "---"

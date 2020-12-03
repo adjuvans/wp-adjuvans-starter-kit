@@ -42,5 +42,18 @@ if test -t 1; then
         white="$(tput setaf 7)"
     fi
 fi
-
 clear
+
+echo "${standout}
+
+#
+#   ██████╗██████╗  ██████╗     ██╗      █████╗ ██████╗ ███████╗
+#  ██╔════╝██╔══██╗██╔════╝     ██║     ██╔══██╗██╔══██╗██╔════╝
+#  ██║     ██║  ██║██║  ███╗    ██║     ███████║██████╔╝███████╗
+#  ██║     ██║  ██║██║   ██║    ██║     ██╔══██║██╔══██╗╚════██║
+#  ╚██████╗██████╔╝╚██████╔╝    ███████╗██║  ██║██████╔╝███████║
+#   ╚═════╝╚═════╝  ╚═════╝     ╚══════╝╚═╝  ╚═╝╚═════╝ ╚══════╝
+#
+${normal}
+${yellow}Script for ${green}${project_name}${yellow} by ${green}Cyrille de Gourcy <cyrille@gourcy.net>${normal}
+${yellow}> https://cyrille.de.gourcy.net${normal}"
