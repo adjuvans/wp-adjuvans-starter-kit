@@ -1,5 +1,5 @@
 #!/bin/sh
-source config.sh
+source ./config.sh
 
 echo "${blue}${bold}# WORDPRESS${normal}"
 
