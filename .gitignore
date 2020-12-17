@@ -10,6 +10,9 @@ wordpress/wp-content/*
 
 # ignore these plugins
 wordpress/wp-content/plugins/hello.php
+wordpress/wp-content/plugins/wp-all-*
+wordpress/wp-content/plugins/wpae-*
+wordpress/wp-content/plugins/fg-drupal-to-wp-*
 
 # ignore specific themes
 wordpress/wp-content/themes/twenty*/
