@@ -27,8 +27,13 @@ if [ ! -d "${directory_public}" ]; then
     php wp-cli.phar plugin install coming-soon --activate
     php wp-cli.phar plugin install loco-translate --activate
     php wp-cli.phar plugin install contact-form-7 --activate
+    php wp-cli.phar plugin install flamingo --activate
     php wp-cli.phar plugin install redirection --activate
+    php wp-cli.phar plugin install disable-comments --activate
+    php wp-cli.phar plugin install classic-editor --activate
+    php wp-cli.phar plugin install mailjet-for-wordpress --activate
     php wp-cli.phar plugin install duplicate-post --activate
+    php wp-cli.phar plugin install wordpress-seo --activate
     php wp-cli.phar plugin install wordpress-seo --activate
     echo "---"
 fi
