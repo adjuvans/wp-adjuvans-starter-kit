@@ -24,7 +24,7 @@ if [ ! -d "${directory_public}" ]; then
     echo "---"
     echo "Installing plugins"
     php wp-cli.phar plugin install query-monitor --activate
-    php wp-cli.phar plugin install maintenance --activate
+    php wp-cli.phar plugin install coming-soon --activate
     php wp-cli.phar plugin install loco-translate --activate
     php wp-cli.phar plugin install contact-form-7 --activate
     php wp-cli.phar plugin install redirection --activate
