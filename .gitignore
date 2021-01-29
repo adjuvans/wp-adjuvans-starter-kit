@@ -25,6 +25,10 @@ node_modules/
 *.sql
 *.sqlite
 
+# ignore some files
+wordpress/.htaccess
+wordpress/wp-config.php
+
 # ignore some directories
 backups/
 !backups/.ok
