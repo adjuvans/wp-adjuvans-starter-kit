@@ -2,6 +2,7 @@
 
 ### Cheat code to install default plugins
 
+```
 wp plugin install query-monitor --activate
 wp plugin install coming-soon --activate
 wp plugin install loco-translate --activate
@@ -13,3 +14,4 @@ wp plugin install classic-editor --activate
 wp plugin install mailjet-for-wordpress --activate
 wp plugin install duplicate-post --activate
 wp plugin install wordpress-seo --activate
+```
