@@ -1,5 +1,5 @@
 # ignore everything in the root except the "wp-content" directory.
-!wordpress/wp-content/
+!wp-content/
 
 # ignore everything in the "wp-content" directory, except:
 # "mu-plugins", "plugins", "themes" directory
@@ -7,27 +7,21 @@ wordpress/wp-content/*
 !wordpress/wp-content/mu-plugins/
 !wordpress/wp-content/plugins/
 !wordpress/wp-content/themes/
+!wordpress/wp-content/languages/loco/
+wordpress/wp-content/languages/loco/*.json
 
 # ignore these plugins
-wordpress/wp-content/plugins/hello.php
-wordpress/wp-content/plugins/wp-all-*
-wordpress/wp-content/plugins/wpae-*
-wordpress/wp-content/plugins/fg-drupal-to-wp-*
+wp-content/plugins/hello.php
 
 # ignore specific themes
 wordpress/wp-content/themes/twenty*/
 
-# ignore node dependency directories
-node_modules/
-
-# ignore log files and databases
-*.log
-*.sql
-*.sqlite
-
-# ignore some files
-wordpress/.htaccess
-wordpress/wp-config.php
+# ignore specific files
+wp-cli.phar
+wordfence-waf.php
+wp-config.php
+.htaccess
+.user.ini
 
 # ignore some directories
 backups/
@@ -35,7 +29,10 @@ backups/
 logs/
 !logs/.ok
 
-# ignore some files
+# ignore log files and databases
+*.log
+*.sql
+*.sqlite
 *.git
 *.svn
 *.CVS
@@ -49,4 +46,3 @@ nbproject
 *.zip
 *.tar.gz
 *~
-wp-cli.phar

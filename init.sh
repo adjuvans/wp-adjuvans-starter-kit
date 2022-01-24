@@ -1,19 +1,23 @@
 #!/bin/sh
-source ./config.sh
+. $(dirname "$0")/config.sh
 
 echo " "
 echo "---"
-echo "${blue}${bold}# WP-CLI${normal}"
+echo "${blue}${bold}# WP-CLI INSTALL${normal}"
+# Install or update WP-CLI
 if [ -e "${file_wpcli_phar}" ]; then
     chmod 700 ${file_wpcli_phar}
-    echo "WP-CLI ${green}${file_wpcli_phar}${normal} have been maked executable."
+    ${file_wpcli_phar} cli update
+    echo "WP-CLI file ${green}${file_wpcli_phar}${normal} have been updated & maked executable."
 else
-    echo "Installing WP-CLI"
     curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
     chmod 700 ${file_wpcli_phar}
-    echo "WP-CLI ${green}${file_wpcli_phar}${normal} have been created & maked executable."
+    echo "WP-CLI file ${green}${file_wpcli_phar}${normal} have been created & maked executable."
 fi
 
+echo " "
+echo "---"
+echo "${blue}${bold}# WP-CLI CONFIG FILE${normal}"
 # Create config file for WP-CLI
 if [ -e "${file_wpcli_config}" ]; then
     chmod 700 ${file_wpcli_config}
@@ -22,24 +26,6 @@ else
     echo "path: ${directory_public}" | tee ${file_wpcli_config}
     chmod 700 ${file_wpcli_config}
     echo "Config file ${green}${file_wpcli_config}${normal} have been created & maked executable."
-fi
-
-# Get WordPress Sources
-if [ ! -d "${directory_public}" ]; then
-    echo " "
-    echo "---"
-    echo "${blue}${bold}# WORDPRESS${normal}"
-    echo "Installing WordPress"
-    php wp-cli.phar core download --locale=fr_FR
-
-    echo "Installing plugins"
-    php wp-cli.phar plugin install query-monitor
-    php wp-cli.phar plugin install maintenance
-    php wp-cli.phar plugin install loco-translate
-    php wp-cli.phar plugin install contact-form-7
-    php wp-cli.phar plugin install redirection
-    php wp-cli.phar plugin install duplicate-post
-    php wp-cli.phar plugin install wordpress-seo
 fi
 
 echo " "

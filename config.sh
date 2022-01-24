@@ -1,6 +1,5 @@
 #!/bin/sh
-
-project_name=PROJECT_NAME
+project_name="PROJECT_NAME"
 
 directory_log=logs
 directory_public=wordpress
@@ -10,8 +9,8 @@ file_wpcli_phar=wp-cli.phar
 file_wpcli_config=wp-cli.yml
 
 site_locale=fr_FR
-site_title="Mon site WordPress"
-site_url=example.com
+site_title="${project_name}"
+site_url=www.domaine.com
 
 admin_email=cyrille@gourcy.net
 admin_login=cdegourcy

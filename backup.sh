@@ -1,6 +1,5 @@
 #!/bin/sh
-
-source ./config.sh
+. $(dirname "$0")/config.sh
 
 echo " "
 echo "---"
