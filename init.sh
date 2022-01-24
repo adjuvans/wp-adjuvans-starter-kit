@@ -15,6 +15,12 @@ else
     echo "WP-CLI file ${green}${file_wpcli_phar}${normal} have been created & maked executable."
 fi
 
+echo "${blue}${bold}# WP-CLI COMPLETION${normal}"
+# Install or update WP-CLI COMPLETION
+curl -O https://github.com/wp-cli/wp-cli/raw/master/utils/wp-completion.bash
+chmod 700 ${file_wpcli_completion}
+echo "WP-COMPLETION file ${green}${file_wpcli_completion}${normal} have been created & maked executable."
+
 echo " "
 echo "---"
 echo "${blue}${bold}# WP-CLI CONFIG FILE${normal}"

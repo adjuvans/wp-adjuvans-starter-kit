@@ -6,6 +6,7 @@ directory_public=wordpress
 directory_backup=backups
 
 file_wpcli_phar=wp-cli.phar
+file_wpcli_completion=wp-completion.bash
 file_wpcli_config=wp-cli.yml
 
 site_locale=fr_FR
