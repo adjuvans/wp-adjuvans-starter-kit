@@ -3,7 +3,7 @@ project_name="PROJECT_NAME"
 
 directory_log=logs
 directory_public=wordpress
-directory_backup=backups
+directory_backup=save
 
 file_wpcli_phar=wp-cli.phar
 file_wpcli_completion=wp-completion.bash
