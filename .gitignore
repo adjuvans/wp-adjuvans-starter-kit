@@ -2,10 +2,8 @@
 !wp-content/
 
 # ignore everything in the "wp-content" directory, except:
-# "mu-plugins", "plugins", "themes" directory
+# "themes", "languages/loco" directory
 wordpress/wp-content/*
-!wordpress/wp-content/mu-plugins/
-!wordpress/wp-content/plugins/
 !wordpress/wp-content/themes/
 !wordpress/wp-content/languages/loco/
 wordpress/wp-content/languages/loco/*.json
