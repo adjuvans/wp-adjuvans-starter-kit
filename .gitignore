@@ -24,8 +24,8 @@ wp-config.php
 .user.ini
 
 # ignore some directories
-backups/
-!backups/.ok
+save/
+!save/.ok
 logs/
 !logs/.ok
 
