@@ -1,9 +1,14 @@
 #!/bin/sh
+
 project_name="PROJECT_NAME"
+project_slug="project-slug"
 
 directory_log=logs
 directory_public=wordpress
 directory_backup=save
+
+theme_name="the-theme"
+theme_child_name="the-theme-child"
 
 file_wpcli_phar=wp-cli.phar
 file_wpcli_completion=wp-completion.bash
