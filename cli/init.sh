@@ -7,7 +7,7 @@ echo "${blue}${bold}# WP-CLI INSTALL${normal}"
 # Install or update WP-CLI
 if [ -e "${file_wpcli_phar}" ]; then
     chmod 700 ${file_wpcli_phar}
-    ${file_wpcli_phar} cli update
+    php ${file_wpcli_phar} cli update
     echo "WP-CLI file ${green}${file_wpcli_phar}${normal} have been updated & maked executable."
 else
     curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
