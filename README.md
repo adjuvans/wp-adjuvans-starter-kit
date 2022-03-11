@@ -6,7 +6,13 @@ Be sure to have good rights access on `cli` directory, and be able to run shell 
 
 ### 1. cli/config.sh
 
-Rename file `cli/config.sample.sh` to `cli/config.sh` and fill all settings withs data of the project in this file.
+Rename file `cli/config.sample.sh` to `cli/config.sh` by usinh:
+
+```
+cp cli/config.sample.sh cli/config.sh
+```
+
+Then, fill all settings withs data of the project in this file.
 
 ### 2. cli/init.sh
 
