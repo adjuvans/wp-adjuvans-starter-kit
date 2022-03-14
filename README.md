@@ -57,6 +57,7 @@ wp plugin install elementor --activate
 wp plugin install code-snippets --activate
 wp plugin install contact-form-7 --activate
 wp plugin install disable-comments --activate
+wp plugin install dynamicconditions --activate
 wp plugin install enable-media-replace --activate
 wp plugin install fast-velocity-minify --activate
 wp plugin install flamingo --activate
@@ -70,4 +71,12 @@ wp plugin install google-site-kit --activate
 wp plugin install mailjet-for-wordpress --activate
 wp plugin install duplicate-post --activate
 wp plugin install wordpress-seo --activate
+```
+
+## PRO Elements
+
+This plugin enables GPL features of Elementor Pro: widgets, theme builder, dynamic colors and content, forms & popup builder, and more.
+
+```
+git clone https://github.com/proelements/proelements
 ```
