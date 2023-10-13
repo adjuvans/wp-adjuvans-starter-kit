@@ -47,6 +47,12 @@ if [ -d "${directory_public}" ]; then
     # change rights on files
     find ${directory_public} -type f -exec chmod -R 644 {} \;
     echo "Rights of the files in ${green}/${directory_public}${normal} have been changed to ${green}644${normal}."
+
+    chmod 444 ${directory_public}/wp-config.php
+    echo "Rights of the file in ${green}/${directory_public}/wp-config.php${normal} have been changed to ${green}444${normal}."
+
+    chmod 444 ${directory_public}/.htaccess
+    echo "Rights of the file in ${green}/${directory_public}/.htaccess${normal} have been changed to ${green}444${normal}."
 else
     echo "${red}The directory /${directory_public} doesn't exist!${normal}"
 fi
