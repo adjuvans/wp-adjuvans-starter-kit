@@ -10,6 +10,6 @@ echo "The backup file ${green}${date}_${directory_public}-files.tar.gz${normal} 
 echo " "
 echo "---"
 echo "${blue}${bold}# BACKUP DB${normal}"
-wp db export ${directory_backup}/${date}_${directory_public}-db.sql
+php ${file_wpcli_phar} db export ${directory_backup}/${date}_${directory_public}-db.sql
 echo "The DB backup ${green}${directory_backup}/${date}_${directory_public}-db.sql${normal} have been created in ${green}/${directory_backup}${normal}."
 echo "---"
