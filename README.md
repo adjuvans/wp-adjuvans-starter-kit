@@ -55,20 +55,11 @@ cli/compile-sass.sh
 ```
 wp plugin install elementor --activate
 wp plugin install code-snippets --activate
-wp plugin install contact-form-7 --activate
-wp plugin install disable-comments --activate
-wp plugin install dynamicconditions --activate
 wp plugin install enable-media-replace --activate
-wp plugin install fast-velocity-minify --activate
-wp plugin install flamingo --activate
-wp plugin install intuitive-custom-post-order --activate
-wp plugin install better-wp-security --activate
 wp plugin install loco-translate --activate
 wp plugin install pro-elements --activate
-wp plugin install query-monitor --activate
 wp plugin install redirection --activate
 wp plugin install google-site-kit --activate
-wp plugin install mailjet-for-wordpress --activate
 wp plugin install duplicate-post --activate
 wp plugin install wordpress-seo --activate
 ```
