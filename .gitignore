@@ -46,3 +46,4 @@ nbproject
 *.tar.gz
 *~
 *.code-workspace
+wp-completion.bash
