@@ -1,4 +1,4 @@
-# PROJECT_NAME
+# WPSTARTER KIT
 
 ## CLI commands
 

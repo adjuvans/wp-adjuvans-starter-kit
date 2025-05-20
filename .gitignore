@@ -45,3 +45,4 @@ nbproject
 *.zip
 *.tar.gz
 *~
+*.code-workspace
