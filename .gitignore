@@ -2,20 +2,7 @@
 cli/config.sh
 
 # ignore everything in the root except the "wp-content" directory.
-!wp-content/
-
-# ignore everything in the "wp-content" directory, except:
-# "themes", "languages/loco" directory
-wordpress/wp-content/*
-!wordpress/wp-content/themes/
-!wordpress/wp-content/languages/loco/
-wordpress/wp-content/languages/loco/*.json
-
-# ignore these plugins
-wp-content/plugins/hello.php
-
-# ignore specific themes
-wordpress/wp-content/themes/twenty*/
+wordpress
 
 # ignore specific files
 cli/config.sh
