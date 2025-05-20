@@ -7,18 +7,28 @@ CONFIG_FILE="$(dirname "$0")/config.sh"
 
 echo ""
 echo "---"
-echo "${blue}${bold}# INSTALLATION WP-CLI${normal}"
+echo "${blue}${bold}# SÉCURITÉ WP-CLI (SHA512)${normal}"
 
-# Télécharger ou mettre à jour WP-CLI
-if [ -e "${file_wpcli_phar}" ]; then
-    chmod 700 "${file_wpcli_phar}"
-    php "${file_wpcli_phar}" cli update
-    echo "WP-CLI mis à jour : ${green}${file_wpcli_phar}${normal}"
+TMP_PHAR="wp-cli.phar"
+TMP_SHA="wp-cli.phar.sha512"
+
+# Télécharger le phar et sa signature
+curl -O -L https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/$TMP_PHAR
+curl -O -L https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/$TMP_SHA
+
+# Vérification de la signature
+if echo "$(cat $TMP_SHA)  $TMP_PHAR" | sha512sum -c -; then
+    mv $TMP_PHAR "$file_wpcli_phar"
+    chmod 700 "$file_wpcli_phar"
+    echo "✅ WP-CLI vérifié et installé : ${green}$file_wpcli_phar${normal}"
 else
-    curl -o "${file_wpcli_phar}" -L https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
-    chmod 700 "${file_wpcli_phar}"
-    echo "WP-CLI installé : ${green}${file_wpcli_phar}${normal}"
+    echo "${red}[!] ERREUR : Signature WP-CLI invalide${normal}"
+    rm -f $TMP_PHAR $TMP_SHA
+    exit 1
 fi
+
+rm -f $TMP_SHA
+
 
 echo "${blue}${bold}# COMPLETION WP-CLI${normal}"
 curl -o "${file_wpcli_completion}" -L https://github.com/wp-cli/wp-cli/raw/master/utils/wp-completion.bash

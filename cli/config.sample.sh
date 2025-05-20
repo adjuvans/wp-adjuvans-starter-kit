@@ -3,23 +3,23 @@
 project_name="PROJECT_NAME"
 project_slug="project-slug"
 
-directory_log=logs
-directory_public=wordpress
-directory_backup=save
+directory_log="./logs"
+directory_public="./wordpress"
+directory_backup="./save"
 
-theme_name="the-theme"
-theme_child_name="the-theme-child"
+theme_name="hello-elementor"
+theme_child_name="hello-elementor"
 
-file_wpcli_phar=wp-cli.phar
-file_wpcli_completion=wp-completion.bash
-file_wpcli_config=wp-cli.yml
+file_wpcli_phar="./wp-cli.phar"
+file_wpcli_completion="./wp-completion.bash"
+file_wpcli_config="./wp-cli.yml"
 
-site_locale=fr_FR
-site_title="${project_name}"
-site_url=www.domaine.com
+site_locale="fr_FR"
+site_title=""
+site_url=""
 
-admin_email=cyrille@gourcy.net
-admin_login=cdegourcy
+admin_email=""
+admin_login=""
 
 db_host=
 db_name=
