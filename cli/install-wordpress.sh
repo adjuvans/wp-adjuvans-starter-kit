@@ -289,6 +289,11 @@ $PHP_BIN "../${file_wpcli_phar}" option update blog_public '0' 2>/dev/null || tr
 
 # Create .htaccess to protect sensitive files
 HTACCESS_FILE="${PWD}/.htaccess"
+if [ -f "$HTACCESS_FILE" ]; then
+    chmod u+w "$HTACCESS_FILE" 2>/dev/null || log_warn "Cannot make .htaccess writable, check permissions"
+else
+    touch "$HTACCESS_FILE" || log_fatal "Cannot create .htaccess (permissions/ACL?)"
+fi
 log_info "Creating security rules..."
 cat > "$HTACCESS_FILE" <<'EOF'
 # BEGIN WordPress
@@ -304,7 +309,7 @@ RewriteRule . /index.php [L]
 # END WordPress
 EOF
 
-chmod 400 "$HTACCESS_FILE"
+chmod 644 "$HTACCESS_FILE"
 log_success ".htaccess created and secured"
 
 log_separator
