@@ -5,8 +5,19 @@
 set -euo pipefail
 
 # Load dependencies
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-. "${SCRIPT_DIR}/logger.sh"
+# Note: SCRIPT_DIR is inherited from the calling script (install-wordpress.sh)
+# If called directly, define it
+if [ -z "${SCRIPT_DIR:-}" ]; then
+    SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+fi
+
+# Load colors and logger if not already loaded
+if [ -z "${COLORS_LOADED:-}" ]; then
+    . "${SCRIPT_DIR}/lib/colors.sh"
+fi
+if [ -z "${LOGGER_LOADED:-}" ]; then
+    . "${SCRIPT_DIR}/lib/logger.sh"
+fi
 
 # Generate wp-config.php securely
 # Usage: generate_wp_config "db_name" "db_user" "db_pass" "db_host" "db_prefix" "target_dir"
@@ -105,6 +116,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 /** Sets up WordPress vars and included files. */
 require_once ABSPATH . 'wp-settings.php';
 EOF
+
+    # Ensure target directory exists
+    if [ ! -d "$target_dir" ]; then
+        log_info "Creating target directory: ${target_dir}"
+        mkdir -p "$target_dir" || {
+            log_error "Failed to create directory: ${target_dir}"
+            return 1
+        }
+    fi
 
     # Move temporary file to target location
     local config_path="${target_dir}/wp-config.php"

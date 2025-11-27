@@ -4,18 +4,24 @@
 
 set -euo pipefail
 
-# Load dependencies
+# Set script directory
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-. "${SCRIPT_DIR}/lib/colors.sh"
-. "${SCRIPT_DIR}/lib/logger.sh"
 
-# Load configuration
+# Load configuration FIRST (before logger, so LOG_DIR can be set)
 CONFIG_FILE="${SCRIPT_DIR}/../config/config.sh"
 if [ ! -f "$CONFIG_FILE" ]; then
-    log_fatal "Configuration file not found: ${CONFIG_FILE}"
+    echo "ERROR: Configuration file not found: ${CONFIG_FILE}"
+    exit 1
 fi
 
 . "$CONFIG_FILE"
+
+# Set LOG_DIR from config before loading logger
+export LOG_DIR="${directory_log}"
+
+# Load dependencies
+. "${SCRIPT_DIR}/lib/colors.sh"
+. "${SCRIPT_DIR}/lib/logger.sh"
 
 # Check if GPG encryption should be used
 USE_ENCRYPTION="${USE_GPG_ENCRYPTION:-false}"

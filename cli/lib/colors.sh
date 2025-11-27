@@ -2,6 +2,9 @@
 # colors.sh - Terminal colors and formatting utilities
 # This library provides color variables for terminal output
 
+# Mark as loaded to prevent double-loading
+export COLORS_LOADED=1
+
 # Check if stdout is a terminal and supports colors
 if test -t 1; then
     ncolors=$(tput colors)
