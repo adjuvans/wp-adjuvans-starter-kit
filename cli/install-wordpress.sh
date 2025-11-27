@@ -28,6 +28,29 @@ export LOG_DIR="${directory_log}"
 
 log_section "WORDPRESS INSTALLATION"
 
+# Detect PHP binary
+if command -v php >/dev/null 2>&1; then
+    PHP_BIN="php"
+    log_info "Using PHP: $(php -v | head -n1)"
+elif command -v php8.3 >/dev/null 2>&1; then
+    PHP_BIN="php8.3"
+    log_info "Using PHP 8.3: $(php8.3 -v | head -n1)"
+elif command -v php8.2 >/dev/null 2>&1; then
+    PHP_BIN="php8.2"
+    log_info "Using PHP 8.2: $(php8.2 -v | head -n1)"
+elif command -v php8.1 >/dev/null 2>&1; then
+    PHP_BIN="php8.1"
+    log_info "Using PHP 8.1: $(php8.1 -v | head -n1)"
+elif command -v php8.0 >/dev/null 2>&1; then
+    PHP_BIN="php8.0"
+    log_info "Using PHP 8.0: $(php8.0 -v | head -n1)"
+elif command -v php7.4 >/dev/null 2>&1; then
+    PHP_BIN="php7.4"
+    log_info "Using PHP 7.4: $(php7.4 -v | head -n1)"
+else
+    log_fatal "PHP not found in PATH. Please install PHP or add it to your PATH."
+fi
+
 # Check if WP-CLI is available
 if [ ! -f "$file_wpcli_phar" ]; then
     log_fatal "WP-CLI not found at ${file_wpcli_phar}
@@ -50,7 +73,7 @@ ORIGINAL_DIR="$(pwd)"
 
 cd "$directory_public" || log_fatal "Cannot access directory: ${directory_public}"
 
-if php "../${file_wpcli_phar}" core is-installed 2>/dev/null; then
+if $PHP_BIN "../${file_wpcli_phar}" core is-installed 2>/dev/null; then
     log_warn "WordPress is already installed"
     read -p "Do you want to continue anyway? (y/N): " -r
     if [ "$REPLY" != "y" ] && [ "$REPLY" != "Y" ]; then
@@ -59,7 +82,7 @@ if php "../${file_wpcli_phar}" core is-installed 2>/dev/null; then
     fi
 fi
 
-if ! php "../${file_wpcli_phar}" core download --locale="${site_locale}" --force; then
+if ! $PHP_BIN "../${file_wpcli_phar}" core download --locale="${site_locale}" --force; then
     log_fatal "Failed to download WordPress core"
 fi
 
@@ -105,70 +128,94 @@ echo "$TEMP_ADMIN_PASS" > "$TEMP_PASS_FILE"
 # Ensure cleanup on exit
 trap 'rm -f "$TEMP_PASS_FILE"' EXIT INT TERM
 
-# Install WordPress with temporary password
-# Note: This still exposes the temp password in process list, but it's immediately changed
-if ! php "../${file_wpcli_phar}" core install \
-    --url="${site_url}" \
-    --title="${site_title}" \
-    --admin_user="${admin_login}" \
-    --admin_password="$(cat "$TEMP_PASS_FILE")" \
-    --admin_email="${admin_email}" \
-    --skip-email; then
-    log_fatal "WordPress installation failed"
-fi
+# Go back to WordPress directory for WP-CLI commands
+cd "$directory_public" || log_fatal "Cannot access directory: ${directory_public}"
 
-log_success "WordPress database created"
+# Check if WordPress is already installed
+if $PHP_BIN "../${file_wpcli_phar}" core is-installed 2>/dev/null; then
+    log_warn "WordPress is already installed in the database"
+    log_info "Skipping database installation (use --force to reinstall)"
+else
+    # Install WordPress with temporary password
+    # Note: This still exposes the temp password in process list, but it's immediately changed
+    log_info "Executing: wp core install..."
+    if ! $PHP_BIN "../${file_wpcli_phar}" core install \
+        --url="${site_url}" \
+        --title="${site_title}" \
+        --admin_user="${admin_login}" \
+        --admin_password="$(cat "$TEMP_PASS_FILE")" \
+        --admin_email="${admin_email}" \
+        --skip-email 2>&1; then
+        log_error "WordPress installation command failed"
+        log_info "Checking database connection..."
+        # Test database connection
+        if $PHP_BIN "../${file_wpcli_phar}" db check 2>&1; then
+            log_success "Database connection OK"
+        else
+            log_fatal "Database connection failed - check credentials in config/config.sh"
+        fi
+        log_fatal "WordPress installation failed"
+    fi
+    log_success "WordPress database created"
+fi
 
 # Immediately update the admin password to the real one using WP-CLI
 # This is more secure as we're using WP-CLI's user update which can read from stdin
 log_info "Setting final admin password..."
 
 # Method 1: Using wp user update (more secure - credentials from file)
-if ! echo "$admin_pass" | php "../${file_wpcli_phar}" user update "${admin_login}" \
+if ! echo "$admin_pass" | $PHP_BIN "../${file_wpcli_phar}" user update "${admin_login}" \
     --user_pass="$(cat -)" --skip-email 2>/dev/null; then
 
     # Fallback method if the above doesn't work
     log_warn "Using fallback method for password update..."
-    php "../${file_wpcli_phar}" user update "${admin_login}" \
+    $PHP_BIN "../${file_wpcli_phar}" user update "${admin_login}" \
         --user_pass="${admin_pass}" --skip-email
 fi
 
 log_success "Admin password set securely"
+
+# Return to original directory
+cd "$ORIGINAL_DIR" || log_fatal "Cannot return to original directory"
+
 log_separator
 
 # Step 4: Security hardening
 log_section "STEP 4/4: SECURITY HARDENING"
 
+# Go to WordPress directory for WP-CLI commands
+cd "$directory_public" || log_fatal "Cannot access directory: ${directory_public}"
+
 # Remove default themes (except active one)
 log_info "Cleaning up default themes..."
-ACTIVE_THEME=$(php "../${file_wpcli_phar}" theme list --status=active --field=name 2>/dev/null || echo "")
+ACTIVE_THEME=$($PHP_BIN "../${file_wpcli_phar}" theme list --status=active --field=name 2>/dev/null || echo "")
 
 for theme in twentytwentyone twentytwentytwo twentytwentythree twentytwentyfour; do
     if [ "$theme" != "$ACTIVE_THEME" ]; then
-        php "../${file_wpcli_phar}" theme delete "$theme" 2>/dev/null || true
+        $PHP_BIN "../${file_wpcli_phar}" theme delete "$theme" 2>/dev/null || true
     fi
 done
 
 # Remove default plugins
 log_info "Removing default plugins..."
-php "../${file_wpcli_phar}" plugin delete hello akismet 2>/dev/null || true
+$PHP_BIN "../${file_wpcli_phar}" plugin delete hello akismet 2>/dev/null || true
 
 # Update permalink structure
 log_info "Setting permalink structure..."
-php "../${file_wpcli_phar}" rewrite structure '/%postname%/' --hard 2>/dev/null || true
+$PHP_BIN "../${file_wpcli_phar}" rewrite structure '/%postname%/' --hard 2>/dev/null || true
 
 # Disable comments by default
 log_info "Disabling comments on new posts..."
-php "../${file_wpcli_phar}" option update default_comment_status 'closed' 2>/dev/null || true
-php "../${file_wpcli_phar}" option update default_ping_status 'closed' 2>/dev/null || true
+$PHP_BIN "../${file_wpcli_phar}" option update default_comment_status 'closed' 2>/dev/null || true
+$PHP_BIN "../${file_wpcli_phar}" option update default_ping_status 'closed' 2>/dev/null || true
 
 # Set timezone
 log_info "Setting timezone to Europe/Paris..."
-php "../${file_wpcli_phar}" option update timezone_string 'Europe/Paris' 2>/dev/null || true
+$PHP_BIN "../${file_wpcli_phar}" option update timezone_string 'Europe/Paris' 2>/dev/null || true
 
 # Discourage search engines (can be changed later in admin)
 log_warn "Discouraging search engines (remember to enable later!)"
-php "../${file_wpcli_phar}" option update blog_public '0' 2>/dev/null || true
+$PHP_BIN "../${file_wpcli_phar}" option update blog_public '0' 2>/dev/null || true
 
 # Create .htaccess to protect sensitive files
 log_info "Creating security rules..."
