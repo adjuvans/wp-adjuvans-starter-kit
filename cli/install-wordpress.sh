@@ -31,8 +31,19 @@ log_section "WORDPRESS INSTALLATION"
 # Detect PHP binary - try multiple strategies
 log_info "Detecting PHP binary..."
 
-# Strategy 1: Check for versioned PHP binaries first (more reliable on shared hosting)
-if command -v php8.3 >/dev/null 2>&1; then
+# Strategy 1: Check for generic 'php' command FIRST (most common on shared hosting)
+if command -v php >/dev/null 2>&1; then
+    PHP_BIN="php"
+    PHP_VERSION=$(php -v 2>&1 | head -n1)
+    PHP_PATH=$(command -v php)
+    log_success "Found PHP: ${PHP_VERSION}"
+    log_info "PHP binary location: ${PHP_PATH}"
+
+    # Show what 'php' actually is (to detect aliases/functions)
+    PHP_TYPE=$(type php 2>&1)
+    log_info "PHP type: ${PHP_TYPE}"
+# Strategy 2: Check for versioned PHP binaries (alternative naming)
+elif command -v php8.3 >/dev/null 2>&1; then
     PHP_BIN="php8.3"
     log_success "Found PHP 8.3: $(php8.3 -v 2>&1 | head -n1)"
 elif command -v php8.2 >/dev/null 2>&1; then
@@ -47,10 +58,6 @@ elif command -v php8.0 >/dev/null 2>&1; then
 elif command -v php7.4 >/dev/null 2>&1; then
     PHP_BIN="php7.4"
     log_success "Found PHP 7.4: $(php7.4 -v 2>&1 | head -n1)"
-# Strategy 2: Check for generic 'php' command
-elif command -v php >/dev/null 2>&1; then
-    PHP_BIN="php"
-    log_success "Found PHP: $(php -v 2>&1 | head -n1)"
 # Strategy 3: Common absolute paths on shared hosting
 elif [ -x "/usr/local/bin/php" ]; then
     PHP_BIN="/usr/local/bin/php"
@@ -64,14 +71,18 @@ else
     echo "${YELLOW}${BOLD}Debugging information:${NORMAL}"
     echo "PATH=${PATH}"
     echo ""
+    echo "Testing PHP commands:"
+    type php 2>&1 || echo "  'php' command not found"
+    echo ""
     echo "Available PHP versions in /usr/bin and /usr/local/bin:"
     ls -la /usr/bin/php* 2>/dev/null || echo "  None in /usr/bin"
     ls -la /usr/local/bin/php* 2>/dev/null || echo "  None in /usr/local/bin"
+    ls -la /usr/local/php*/bin/php 2>/dev/null || echo "  None in /usr/local/php*/"
     echo ""
     echo "${YELLOW}On OVH shared hosting, you may need to:${NORMAL}"
-    echo "  1. Check which PHP version is active in your hosting panel"
-    echo "  2. Use the correct PHP binary (php8.2, php8.1, etc.)"
-    echo "  3. Try: ${GREEN}which php${NORMAL} or ${GREEN}type php${NORMAL}"
+    echo "  1. Check for shell aliases: ${GREEN}type php${NORMAL}"
+    echo "  2. Remove bad alias: ${GREEN}unalias php${NORMAL}"
+    echo "  3. Check hosting panel for PHP version settings"
     echo ""
     log_fatal "Cannot continue without PHP"
 fi
@@ -145,9 +156,13 @@ log_section "STEP 3/4: INSTALLING WORDPRESS DATABASE"
 log_info "Creating WordPress database tables..."
 
 # Generate a temporary random password for initial installation
-TEMP_ADMIN_PASS=$(LC_ALL=C tr -dc 'A-Za-z0-9!@#$%^&*()_+' </dev/urandom | head -c 32)
+log_info "Generating temporary admin password..."
+# Use dd with count instead of head to avoid potential blocking issues
+TEMP_ADMIN_PASS=$(dd if=/dev/urandom bs=32 count=1 2>/dev/null | LC_ALL=C tr -dc 'A-Za-z0-9!@#$%^&*()_+' | head -c 32)
+log_info "Temporary password generated successfully"
 
 # Create a temporary file with restrictive permissions for the admin password
+log_info "Creating temporary password file..."
 TEMP_PASS_FILE=$(mktemp)
 chmod 600 "$TEMP_PASS_FILE"
 echo "$TEMP_ADMIN_PASS" > "$TEMP_PASS_FILE"
@@ -159,13 +174,35 @@ trap 'rm -f "$TEMP_PASS_FILE"' EXIT INT TERM
 cd "$directory_public" || log_fatal "Cannot access directory: ${directory_public}"
 
 # Check if WordPress is already installed
+log_info "Checking if WordPress is already installed..."
 if $PHP_BIN "../${file_wpcli_phar}" core is-installed 2>/dev/null; then
     log_warn "WordPress is already installed in the database"
-    log_info "Skipping database installation (use --force to reinstall)"
+    log_success "Database tables already exist, skipping installation"
+    # Skip to password update
+    SKIP_INSTALL=true
 else
+    log_info "WordPress not installed yet, proceeding with installation..."
+    log_info "Running: $PHP_BIN ../wp-cli.phar core install"
+    log_info "  URL: ${site_url}"
+    log_info "  Title: ${site_title}"
+    log_info "  Admin: ${admin_login}"
+
+    # Debug: Show exact command and PHP binary
+    echo ""
+    echo "${YELLOW}${BOLD}=== DEBUG INFORMATION ===${NORMAL}"
+    echo "PHP_BIN variable: ${GREEN}${PHP_BIN}${NORMAL}"
+    echo "PHP_BIN resolved path: ${GREEN}$(command -v "$PHP_BIN" 2>&1)${NORMAL}"
+    echo "PHP_BIN type: $(type "$PHP_BIN" 2>&1)"
+    echo "Full command that will be executed:"
+    echo "  ${GREEN}$PHP_BIN \"../${file_wpcli_phar}\" core install --url=\"${site_url}\" --title=\"${site_title}\" --admin_user=\"${admin_login}\" --admin_email=\"${admin_email}\" --skip-email${NORMAL}"
+    echo "${YELLOW}${BOLD}=========================${NORMAL}"
+    echo ""
+
+    SKIP_INSTALL=false
+
     # Install WordPress with temporary password
     # Note: This still exposes the temp password in process list, but it's immediately changed
-    log_info "Executing: wp core install..."
+    log_info "Starting WordPress installation NOW..."
     if ! $PHP_BIN "../${file_wpcli_phar}" core install \
         --url="${site_url}" \
         --title="${site_title}" \
@@ -173,6 +210,7 @@ else
         --admin_password="$(cat "$TEMP_PASS_FILE")" \
         --admin_email="${admin_email}" \
         --skip-email 2>&1; then
+        log_error "Command returned with error code: $?"
         log_error "WordPress installation command failed"
         log_info "Checking database connection..."
         # Test database connection
@@ -186,21 +224,26 @@ else
     log_success "WordPress database created"
 fi
 
-# Immediately update the admin password to the real one using WP-CLI
-# This is more secure as we're using WP-CLI's user update which can read from stdin
-log_info "Setting final admin password..."
+# Update admin password only if we just installed WordPress
+if [ "$SKIP_INSTALL" = "false" ]; then
+    # Immediately update the admin password to the real one using WP-CLI
+    # This is more secure as we're using WP-CLI's user update which can read from stdin
+    log_info "Setting final admin password..."
 
-# Method 1: Using wp user update (more secure - credentials from file)
-if ! echo "$admin_pass" | $PHP_BIN "../${file_wpcli_phar}" user update "${admin_login}" \
-    --user_pass="$(cat -)" --skip-email 2>/dev/null; then
+    # Method 1: Using wp user update (more secure - credentials from file)
+    if ! echo "$admin_pass" | $PHP_BIN "../${file_wpcli_phar}" user update "${admin_login}" \
+        --user_pass="$(cat -)" --skip-email 2>/dev/null; then
 
-    # Fallback method if the above doesn't work
-    log_warn "Using fallback method for password update..."
-    $PHP_BIN "../${file_wpcli_phar}" user update "${admin_login}" \
-        --user_pass="${admin_pass}" --skip-email
+        # Fallback method if the above doesn't work
+        log_warn "Using fallback method for password update..."
+        $PHP_BIN "../${file_wpcli_phar}" user update "${admin_login}" \
+            --user_pass="${admin_pass}" --skip-email
+    fi
+
+    log_success "Admin password set securely"
+else
+    log_info "Skipping password update (WordPress was already installed)"
 fi
-
-log_success "Admin password set securely"
 
 # Return to original directory
 cd "$ORIGINAL_DIR" || log_fatal "Cannot return to original directory"
