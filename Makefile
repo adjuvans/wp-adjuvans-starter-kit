@@ -1,4 +1,4 @@
-.PHONY: help check init install backup clean test
+.PHONY: help check init install install-phpwpinfo backup clean test
 
 # Default target
 .DEFAULT_GOAL := help
@@ -34,6 +34,10 @@ install: ## Run interactive WordPress installation wizard
 install-wordpress: init ## Install WordPress (requires existing config)
 	@echo "$(BLUE)Installing WordPress...$(NC)"
 	@./cli/install-wordpress.sh
+
+install-phpwpinfo: ## Install phpwpinfo diagnostic tool
+	@echo "$(BLUE)Installing phpwpinfo...$(NC)"
+	@./cli/install-phpwpinfo.sh
 
 ##@ Maintenance
 
