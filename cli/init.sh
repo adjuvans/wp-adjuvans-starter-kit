@@ -24,8 +24,8 @@ log_section "WORDPRESS ENVIRONMENT INITIALIZATION"
 # WP-CLI security check (SHA512 verification)
 log_section "WP-CLI DOWNLOAD & VERIFICATION"
 
-TMP_PHAR="wp-cli.phar"
-TMP_SHA="wp-cli.phar.sha512"
+TMP_PHAR="wp-cli.phar.tmp"
+TMP_SHA="wp-cli.phar.sha512.tmp"
 
 # Download WP-CLI phar and its SHA512 signature with secure options
 log_info "Downloading WP-CLI..."
