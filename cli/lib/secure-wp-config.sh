@@ -128,7 +128,13 @@ EOF
 
     # Move temporary file to target location
     local config_path="${target_dir}/wp-config.php"
-    mv "$temp_config" "$config_path"
+
+    # If config already exists with read-only permissions, make it writable first
+    if [ -f "$config_path" ]; then
+        chmod 600 "$config_path" 2>/dev/null || true
+    fi
+
+    mv -f "$temp_config" "$config_path"
 
     # Set restrictive permissions (read-only for owner, no access for group/others)
     chmod 400 "$config_path"
