@@ -288,8 +288,9 @@ log_warn "Discouraging search engines (remember to enable later!)"
 $PHP_BIN "../${file_wpcli_phar}" option update blog_public '0' 2>/dev/null || true
 
 # Create .htaccess to protect sensitive files
+HTACCESS_FILE="${PWD}/.htaccess"
 log_info "Creating security rules..."
-cat > "${directory_public}/.htaccess" <<'EOF'
+cat > "$HTACCESS_FILE" <<'EOF'
 # BEGIN WordPress
 <IfModule mod_rewrite.c>
 RewriteEngine On
@@ -301,51 +302,9 @@ RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule . /index.php [L]
 </IfModule>
 # END WordPress
-
-# Security: Protect sensitive files
-<FilesMatch "^(wp-config\.php|\.htaccess|readme\.html|license\.txt)">
-    Order allow,deny
-    Deny from all
-</FilesMatch>
-
-# Security: Disable directory browsing
-Options -Indexes
-
-# Security: Protect against SQL injection
-<IfModule mod_rewrite.c>
-    RewriteCond %{QUERY_STRING} [a-zA-Z0-9_]=http:// [OR]
-    RewriteCond %{QUERY_STRING} [a-zA-Z0-9_]=(\.\.//?)+ [OR]
-    RewriteCond %{QUERY_STRING} [a-zA-Z0-9_]=/([a-z0-9_.]//?)+ [NC,OR]
-    RewriteCond %{QUERY_STRING} \=PHP[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12} [NC,OR]
-    RewriteCond %{QUERY_STRING} (\.\./|\.\.) [OR]
-    RewriteCond %{QUERY_STRING} ftp\: [NC,OR]
-    RewriteCond %{QUERY_STRING} http\: [NC,OR]
-    RewriteCond %{QUERY_STRING} https\: [NC,OR]
-    RewriteCond %{QUERY_STRING} \=\|w\| [NC,OR]
-    RewriteCond %{QUERY_STRING} ^(.*)/self/(.*)$ [NC,OR]
-    RewriteCond %{QUERY_STRING} ^(.*)cPath=http://(.*)$ [NC,OR]
-    RewriteCond %{QUERY_STRING} (\<|%3C).*script.*(\>|%3E) [NC,OR]
-    RewriteCond %{QUERY_STRING} (<|%3C)([^s]*s)+cript.*(>|%3E) [NC,OR]
-    RewriteCond %{QUERY_STRING} (\<|%3C).*iframe.*(\>|%3E) [NC,OR]
-    RewriteCond %{QUERY_STRING} (<|%3C)([^i]*i)+frame.*(>|%3E) [NC,OR]
-    RewriteCond %{QUERY_STRING} base64_encode.*\(.*\) [NC,OR]
-    RewriteCond %{QUERY_STRING} base64_(en|de)code[^(]*\([^)]*\) [NC,OR]
-    RewriteCond %{QUERY_STRING} GLOBALS(=|\[|\%[0-9A-Z]{0,2}) [OR]
-    RewriteCond %{QUERY_STRING} _REQUEST(=|\[|\%[0-9A-Z]{0,2}) [OR]
-    RewriteCond %{QUERY_STRING} ^.*(\[|\]|\(|\)|<|>).* [NC,OR]
-    RewriteCond %{QUERY_STRING} (NULL|OUTFILE|LOAD_FILE) [OR]
-    RewriteCond %{QUERY_STRING} (\./|\../|\.../)+(motd|etc|bin) [NC,OR]
-    RewriteCond %{QUERY_STRING} (localhost|loopback|127\.0\.0\.1) [NC,OR]
-    RewriteCond %{QUERY_STRING} (<|>|'|%0A|%0D|%27|%3C|%3E|%00) [NC,OR]
-    RewriteCond %{QUERY_STRING} concat[^\(]*\( [NC,OR]
-    RewriteCond %{QUERY_STRING} union([^s]*s)+elect [NC,OR]
-    RewriteCond %{QUERY_STRING} union([^a]*a)+ll([^s]*s)+elect [NC,OR]
-    RewriteCond %{QUERY_STRING} (;|<|>|'|"|\)|%0A|%0D|%22|%27|%3C|%3E|%00).*(/\*|union|select|insert|drop|delete|update|cast|create|char|convert|alter|declare|order|script|set|md5|benchmark|encode) [NC]
-    RewriteRule ^(.*)$ - [F,L]
-</IfModule>
 EOF
 
-chmod 400 "${directory_public}/.htaccess"
+chmod 400 "$HTACCESS_FILE"
 log_success ".htaccess created and secured"
 
 log_separator
