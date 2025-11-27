@@ -28,28 +28,55 @@ export LOG_DIR="${directory_log}"
 
 log_section "WORDPRESS INSTALLATION"
 
-# Detect PHP binary
-if command -v php >/dev/null 2>&1; then
-    PHP_BIN="php"
-    log_info "Using PHP: $(php -v | head -n1)"
-elif command -v php8.3 >/dev/null 2>&1; then
+# Detect PHP binary - try multiple strategies
+log_info "Detecting PHP binary..."
+
+# Strategy 1: Check for versioned PHP binaries first (more reliable on shared hosting)
+if command -v php8.3 >/dev/null 2>&1; then
     PHP_BIN="php8.3"
-    log_info "Using PHP 8.3: $(php8.3 -v | head -n1)"
+    log_success "Found PHP 8.3: $(php8.3 -v 2>&1 | head -n1)"
 elif command -v php8.2 >/dev/null 2>&1; then
     PHP_BIN="php8.2"
-    log_info "Using PHP 8.2: $(php8.2 -v | head -n1)"
+    log_success "Found PHP 8.2: $(php8.2 -v 2>&1 | head -n1)"
 elif command -v php8.1 >/dev/null 2>&1; then
     PHP_BIN="php8.1"
-    log_info "Using PHP 8.1: $(php8.1 -v | head -n1)"
+    log_success "Found PHP 8.1: $(php8.1 -v 2>&1 | head -n1)"
 elif command -v php8.0 >/dev/null 2>&1; then
     PHP_BIN="php8.0"
-    log_info "Using PHP 8.0: $(php8.0 -v | head -n1)"
+    log_success "Found PHP 8.0: $(php8.0 -v 2>&1 | head -n1)"
 elif command -v php7.4 >/dev/null 2>&1; then
     PHP_BIN="php7.4"
-    log_info "Using PHP 7.4: $(php7.4 -v | head -n1)"
+    log_success "Found PHP 7.4: $(php7.4 -v 2>&1 | head -n1)"
+# Strategy 2: Check for generic 'php' command
+elif command -v php >/dev/null 2>&1; then
+    PHP_BIN="php"
+    log_success "Found PHP: $(php -v 2>&1 | head -n1)"
+# Strategy 3: Common absolute paths on shared hosting
+elif [ -x "/usr/local/bin/php" ]; then
+    PHP_BIN="/usr/local/bin/php"
+    log_success "Found PHP at /usr/local/bin/php: $($PHP_BIN -v 2>&1 | head -n1)"
+elif [ -x "/usr/bin/php" ]; then
+    PHP_BIN="/usr/bin/php"
+    log_success "Found PHP at /usr/bin/php: $($PHP_BIN -v 2>&1 | head -n1)"
 else
-    log_fatal "PHP not found in PATH. Please install PHP or add it to your PATH."
+    log_error "PHP not found in PATH"
+    echo ""
+    echo "${YELLOW}${BOLD}Debugging information:${NORMAL}"
+    echo "PATH=${PATH}"
+    echo ""
+    echo "Available PHP versions in /usr/bin and /usr/local/bin:"
+    ls -la /usr/bin/php* 2>/dev/null || echo "  None in /usr/bin"
+    ls -la /usr/local/bin/php* 2>/dev/null || echo "  None in /usr/local/bin"
+    echo ""
+    echo "${YELLOW}On OVH shared hosting, you may need to:${NORMAL}"
+    echo "  1. Check which PHP version is active in your hosting panel"
+    echo "  2. Use the correct PHP binary (php8.2, php8.1, etc.)"
+    echo "  3. Try: ${GREEN}which php${NORMAL} or ${GREEN}type php${NORMAL}"
+    echo ""
+    log_fatal "Cannot continue without PHP"
 fi
+
+log_info "Using PHP binary: ${GREEN}${PHP_BIN}${NORMAL}"
 
 # Check if WP-CLI is available
 if [ ! -f "$file_wpcli_phar" ]; then
