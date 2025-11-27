@@ -274,6 +274,9 @@ php ../wp-cli.phar plugin install duplicate-post --activate
 # Install WordPress
 ./cli/install-wordpress.sh
 
+# Install phpwpinfo (WordPress diagnostics tool)
+./cli/install-phpwpinfo.sh
+
 # Create backup (files + database)
 ./cli/backup.sh
 ```
@@ -299,6 +302,60 @@ make clean
 # Show help
 make help
 ```
+
+### 🔍 WordPress Diagnostics with phpwpinfo
+
+**phpwpinfo** is a diagnostic tool (similar to phpinfo) for WordPress installations. It displays comprehensive information about your WordPress environment.
+
+#### Installation
+
+```bash
+./cli/install-phpwpinfo.sh
+```
+
+This will download and install phpwpinfo.php in your WordPress directory.
+
+#### Usage
+
+Access the diagnostic page at: `https://your-site.com/phpwpinfo.php`
+
+**Information displayed:**
+- WordPress version and configuration
+- Active plugins and themes
+- PHP configuration
+- Server environment
+- Database information
+- Security settings
+- Performance metrics
+
+#### ⚠️ Security Warning
+
+**IMPORTANT:** phpwpinfo.php exposes sensitive information about your installation!
+
+**Recommended security measures:**
+
+1. **Delete after use** (most secure):
+   ```bash
+   rm wordpress/phpwpinfo.php
+   ```
+
+2. **Protect with IP restriction** (`.htaccess`):
+   ```apache
+   <Files "phpwpinfo.php">
+       Order Deny,Allow
+       Deny from all
+       Allow from YOUR.IP.ADDRESS
+   </Files>
+   ```
+
+3. **Rename the file**:
+   ```bash
+   mv wordpress/phpwpinfo.php wordpress/diagnostic-$(date +%s).php
+   ```
+
+**Never leave phpwpinfo.php accessible on production without protection!**
+
+More info: [BeAPI/phpwpinfo on GitHub](https://github.com/BeAPI/phpwpinfo)
 
 ---
 
@@ -366,6 +423,7 @@ wp-adjuvans-starter-kit/
 │   ├── install.sh                    # Main interactive installer
 │   ├── init.sh                       # Environment initialization
 │   ├── install-wordpress.sh          # WordPress installation
+│   ├── install-phpwpinfo.sh          # Install phpwpinfo diagnostic tool
 │   ├── backup.sh                     # Backup creation
 │   ├── check-dependencies.sh         # Dependency checker
 │   └── lib/                          # Shared libraries
