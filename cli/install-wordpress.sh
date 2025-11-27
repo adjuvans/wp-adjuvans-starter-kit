@@ -45,6 +45,9 @@ fi
 log_section "STEP 1/4: DOWNLOADING WORDPRESS CORE"
 log_info "Downloading WordPress (locale: ${site_locale})..."
 
+# Save current directory
+ORIGINAL_DIR="$(pwd)"
+
 cd "$directory_public" || log_fatal "Cannot access directory: ${directory_public}"
 
 if php "../${file_wpcli_phar}" core is-installed 2>/dev/null; then
@@ -61,6 +64,10 @@ if ! php "../${file_wpcli_phar}" core download --locale="${site_locale}" --force
 fi
 
 log_success "WordPress core downloaded"
+
+# Return to original directory before generating config
+cd "$ORIGINAL_DIR" || log_fatal "Cannot return to original directory"
+
 log_separator
 
 # Step 2: Create wp-config.php securely (WITHOUT passing credentials as CLI arguments)

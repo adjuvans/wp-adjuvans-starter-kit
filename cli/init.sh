@@ -65,7 +65,7 @@ log_separator
 log_section "WP-CLI BASH COMPLETION"
 
 if curl --proto '=https' --tlsv1.2 -sSfL -o "${file_wpcli_completion}" \
-    https://github.com/wp-cli/wp-cli/raw/master/utils/wp-completion.bash; then
+    https://raw.githubusercontent.com/wp-cli/wp-cli/main/utils/wp-completion.bash; then
     chmod 700 "${file_wpcli_completion}"
     log_success "Bash completion installed: ${file_wpcli_completion}"
     log_info "To enable: add 'source ${file_wpcli_completion}' to your ~/.bashrc"
