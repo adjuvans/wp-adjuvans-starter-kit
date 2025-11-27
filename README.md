@@ -284,8 +284,14 @@ php ../wp-cli.phar plugin install duplicate-post --activate
 ### Using the Makefile (Optional)
 
 ```bash
+# Show all available commands
+make help
+
 # Check dependencies
 make check
+
+# Diagnose PHP installation (useful for troubleshooting)
+make diagnose-php
 
 # Initialize environment
 make init
@@ -293,14 +299,17 @@ make init
 # Install WordPress
 make install
 
+# Install phpwpinfo diagnostic tool
+make install-phpwpinfo
+
 # Create backup
 make backup
 
 # Clean installation (DANGER: deletes WordPress!)
 make clean
 
-# Show help
-make help
+# Update WordPress core, plugins, and themes
+make update-all
 ```
 
 ### 🔍 WordPress Diagnostics with phpwpinfo
@@ -424,6 +433,7 @@ wp-adjuvans-starter-kit/
 │   ├── init.sh                       # Environment initialization
 │   ├── install-wordpress.sh          # WordPress installation
 │   ├── install-phpwpinfo.sh          # Install phpwpinfo diagnostic tool
+│   ├── diagnose-php.sh               # PHP diagnostic tool (OVH troubleshooting)
 │   ├── backup.sh                     # Backup creation
 │   ├── check-dependencies.sh         # Dependency checker
 │   └── lib/                          # Shared libraries
@@ -443,6 +453,7 @@ wp-adjuvans-starter-kit/
 ├── .gitignore                        # Git ignore rules
 ├── Makefile                          # Convenience commands
 ├── README.md                         # This file
+├── TROUBLESHOOTING-OVH.md            # OVH-specific troubleshooting guide
 ├── SECURITY.md                       # Security policy
 └── LICENSE                           # License file
 ```
@@ -508,6 +519,21 @@ BACKUP_RETENTION="7"                 # Number of backups to keep
 ---
 
 ## 🔍 Troubleshooting
+
+### 📘 OVH Shared Hosting
+
+If you're using OVH shared hosting, please refer to our **[OVH Troubleshooting Guide](TROUBLESHOOTING-OVH.md)** which covers:
+- PHP alias issues on OVH
+- Database installation problems
+- Permission errors
+- Complete diagnostic procedures
+
+**Quick diagnostic command:**
+```bash
+make diagnose-php
+# or
+./cli/diagnose-php.sh
+```
 
 ### Common Issues
 

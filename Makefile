@@ -1,4 +1,4 @@
-.PHONY: help check init install install-phpwpinfo backup clean test
+.PHONY: help check init install install-phpwpinfo backup clean test diagnose-php
 
 # Default target
 .DEFAULT_GOAL := help
@@ -22,6 +22,10 @@ help: ## Display this help message
 check: ## Check system dependencies
 	@echo "$(BLUE)Checking dependencies...$(NC)"
 	@./cli/check-dependencies.sh
+
+diagnose-php: ## Diagnose PHP installation and environment
+	@echo "$(BLUE)Running PHP diagnostic...$(NC)"
+	@./cli/diagnose-php.sh
 
 init: check ## Initialize environment (WP-CLI, directories, permissions)
 	@echo "$(BLUE)Initializing environment...$(NC)"
