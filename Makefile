@@ -1,4 +1,5 @@
-.PHONY: help check init install install-phpwpinfo backup clean test diagnose-php
+.PHONY: help check init install install-phpwpinfo backup clean test diagnose-php \
+       plugins-install list-plugins list-themes install-plugin install-theme activate-theme
 
 # Default target
 .DEFAULT_GOAL := help
@@ -42,6 +43,67 @@ install-wordpress: init ## Install WordPress (requires existing config)
 install-phpwpinfo: ## Install phpwpinfo diagnostic tool
 	@echo "$(BLUE)Installing phpwpinfo...$(NC)"
 	@./cli/install-phpwpinfo.sh
+
+##@ Plugins & Themes
+
+plugins-install: ## Run interactive plugin installation wizard
+	@echo "$(BLUE)Starting plugin installer...$(NC)"
+	@./cli/plugins-install.sh
+
+install-plugin: ## Install a plugin (usage: make install-plugin PLUGIN=<slug>)
+	@if [ -z "$(PLUGIN)" ]; then \
+		echo "$(RED)Usage: make install-plugin PLUGIN=<plugin-slug>$(NC)"; \
+		echo "$(YELLOW)Example: make install-plugin PLUGIN=elementor$(NC)"; \
+		exit 1; \
+	fi
+	@if [ -f wp-cli.phar ] && [ -d wordpress ]; then \
+		echo "$(BLUE)Installing plugin: $(PLUGIN)...$(NC)"; \
+		cd wordpress && php ../wp-cli.phar plugin install $(PLUGIN) --activate; \
+		echo "$(GREEN)✓ Plugin $(PLUGIN) installed and activated$(NC)"; \
+	else \
+		echo "$(RED)WordPress not installed. Run 'make install' first.$(NC)"; \
+	fi
+
+install-theme: ## Install a theme (usage: make install-theme THEME=<slug>)
+	@if [ -z "$(THEME)" ]; then \
+		echo "$(RED)Usage: make install-theme THEME=<theme-slug>$(NC)"; \
+		echo "$(YELLOW)Example: make install-theme THEME=flavor$(NC)"; \
+		exit 1; \
+	fi
+	@if [ -f wp-cli.phar ] && [ -d wordpress ]; then \
+		echo "$(BLUE)Installing theme: $(THEME)...$(NC)"; \
+		cd wordpress && php ../wp-cli.phar theme install $(THEME); \
+		echo "$(GREEN)✓ Theme $(THEME) installed$(NC)"; \
+	else \
+		echo "$(RED)WordPress not installed. Run 'make install' first.$(NC)"; \
+	fi
+
+activate-theme: ## Activate a theme (usage: make activate-theme THEME=<slug>)
+	@if [ -z "$(THEME)" ]; then \
+		echo "$(RED)Usage: make activate-theme THEME=<theme-slug>$(NC)"; \
+		exit 1; \
+	fi
+	@if [ -f wp-cli.phar ] && [ -d wordpress ]; then \
+		echo "$(BLUE)Activating theme: $(THEME)...$(NC)"; \
+		cd wordpress && php ../wp-cli.phar theme activate $(THEME); \
+		echo "$(GREEN)✓ Theme $(THEME) activated$(NC)"; \
+	else \
+		echo "$(RED)WordPress not installed$(NC)"; \
+	fi
+
+list-plugins: ## List installed WordPress plugins
+	@if [ -f wp-cli.phar ] && [ -d wordpress ]; then \
+		cd wordpress && php ../wp-cli.phar plugin list; \
+	else \
+		echo "$(RED)WordPress not installed$(NC)"; \
+	fi
+
+list-themes: ## List installed WordPress themes
+	@if [ -f wp-cli.phar ] && [ -d wordpress ]; then \
+		cd wordpress && php ../wp-cli.phar theme list; \
+	else \
+		echo "$(RED)WordPress not installed$(NC)"; \
+	fi
 
 ##@ Maintenance
 
