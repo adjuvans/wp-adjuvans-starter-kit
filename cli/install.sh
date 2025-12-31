@@ -221,15 +221,23 @@ fi
 # Generate configuration file
 log_section "GENERATING CONFIGURATION FILE"
 
-cat > "$CONFIG_FILE" <<EOF
+# Escape special characters in passwords for shell
+escape_for_shell() {
+    printf '%s' "$1" | sed "s/'/'\\\\''/g"
+}
+
+db_pass_escaped=$(escape_for_shell "$db_pass")
+admin_pass_escaped=$(escape_for_shell "$admin_pass")
+
+cat > "$CONFIG_FILE" <<CONFIGEOF
 #!/bin/sh
 # Generated configuration file
 # Created: $(date '+%Y-%m-%d %H:%M:%S')
 # SECURITY WARNING: This file contains sensitive data - NEVER commit to git!
 
 # Project
-project_name="${project_name}"
-project_slug="${project_slug}"
+project_name='${project_name}'
+project_slug='${project_slug}'
 
 # Directories
 directory_public="./wordpress"
@@ -242,32 +250,32 @@ file_wpcli_completion="./wp-completion.bash"
 file_wpcli_config="./wp-cli.yml"
 
 # WordPress
-site_locale="${site_locale}"
-site_title="${site_title}"
-site_url="${site_url}"
+site_locale='${site_locale}'
+site_title='${site_title}'
+site_url='${site_url}'
 
 # Theme
 theme_name="hello-elementor"
 theme_child_name="hello-elementor"
 
 # Database
-db_host="${db_host}"
-db_name="${db_name}"
-db_user="${db_user}"
-db_pass="${db_pass}"
-db_prefix="${db_prefix}"
+db_host='${db_host}'
+db_name='${db_name}'
+db_user='${db_user}'
+db_pass='${db_pass_escaped}'
+db_prefix='${db_prefix}'
 db_charset="utf8mb4"
 
 # Admin
-admin_login="${admin_login}"
-admin_pass="${admin_pass}"
-admin_email="${admin_email}"
+admin_login='${admin_login}'
+admin_pass='${admin_pass_escaped}'
+admin_email='${admin_email}'
 
 # Backup
-USE_GPG_ENCRYPTION="${USE_GPG_ENCRYPTION}"
-GPG_RECIPIENT="${GPG_RECIPIENT}"
-BACKUP_RETENTION="${BACKUP_RETENTION}"
-EOF
+USE_GPG_ENCRYPTION='${USE_GPG_ENCRYPTION}'
+GPG_RECIPIENT='${GPG_RECIPIENT}'
+BACKUP_RETENTION='${BACKUP_RETENTION}'
+CONFIGEOF
 
 chmod 600 "$CONFIG_FILE"
 log_success "Configuration saved: ${CONFIG_FILE}"
