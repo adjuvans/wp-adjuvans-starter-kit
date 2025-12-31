@@ -4,7 +4,8 @@
 
 Tu agis comme un architecte senior en documentation technique et en structuration de dépôts de code.
 
-Tu disposes d'un accès en lecture et écriture au workspace VS Code du projet.
+Tu disposes d'un accès en lecture et écriture au workspace VS Code du projet **WPASK (WP Adjuvans Starter Kit)**, un toolkit Bash DevOps pour l'installation automatisée de sites WordPress sur hébergements mutualisés.
+
 Ta mission est de réorganiser le répertoire `docs/` existant, de manière non destructive, afin de le rendre lisible, maintenable et exploitable sur le long terme.
 
 ## Contenu du répertoire docs/
@@ -13,7 +14,7 @@ Le répertoire `docs/` peut contenir :
 
 - des prompts définissant des rôles d'agents persistants (architecte, développeur senior, sécurité, documentation, release, etc.) ;
 - des prompts ponctuels ou transitoires, utilisés pour des tâches spécifiques ou des expérimentations ;
-- de la documentation technique ou organisationnelle liée au plugin.
+- de la documentation technique ou organisationnelle liée au toolkit.
 
 ## Objectif principal
 
