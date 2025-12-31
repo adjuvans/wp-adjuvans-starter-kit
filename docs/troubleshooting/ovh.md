@@ -1,6 +1,24 @@
-# Dépannage OVH - WP Adjuvans Starter Kit
+# Dépannage OVH
+
+> **Note** : Ce fichier est une copie de [TROUBLESHOOTING-OVH.md](../../TROUBLESHOOTING-OVH.md) à la racine du projet.
+> Pour les contributions, modifiez le fichier à la racine.
+
+---
 
 Ce document explique comment résoudre les problèmes spécifiques aux environnements d'hébergement mutualisé OVH.
+
+## Table des matières
+
+- [Problème d'alias PHP](#-important--problème-dalias-php-sur-ovh)
+- [Diagnostic PHP](#-diagnostic-php)
+- [Configuration manuelle](#️-configuration-manuelle-du-binaire-php)
+- [Problèmes courants](#-problèmes-courants-ovh)
+- [Checklist de dépannage](#-checklist-de-dépannage-ovh)
+- [Installation en mode debug](#-installation-en-mode-debug)
+- [Vérification post-installation](#-vérification-post-installation)
+- [Ressources OVH](#-ressources-ovh)
+
+---
 
 ## ⚠️ IMPORTANT : Problème d'alias PHP sur OVH
 
@@ -131,6 +149,8 @@ ls -la /usr/local/php*/bin/php
 4. Vérifiez la version PHP active
 5. Si nécessaire, changez la version PHP
 
+---
+
 ## 🛠️ Configuration manuelle du binaire PHP
 
 Si les scripts ne détectent pas automatiquement PHP, vous pouvez modifier manuellement le fichier `cli/install-wordpress.sh` :
@@ -145,6 +165,8 @@ Si les scripts ne détectent pas automatiquement PHP, vous pouvez modifier manue
 PHP_BIN="/usr/local/php8.2/bin/php"
 log_info "Using forced PHP binary: ${PHP_BIN}"
 ```
+
+---
 
 ## 🔧 Problèmes courants OVH
 
@@ -247,6 +269,8 @@ rm wordpress/wp-config.php
 ./cli/install-wordpress.sh
 ```
 
+---
+
 ## 📋 Checklist de dépannage OVH
 
 Avant de contacter le support, vérifiez :
@@ -261,6 +285,8 @@ Avant de contacter le support, vérifiez :
 - [ ] Les répertoires logs/ et save/ existent
 - [ ] WP-CLI est téléchargé (`ls -la wp-cli.phar`)
 - [ ] Vous êtes dans le bon répertoire (`pwd`)
+
+---
 
 ## 🚀 Installation en mode debug
 
@@ -278,6 +304,8 @@ set +x
 ```
 
 Cela affichera toutes les commandes exécutées et leurs résultats.
+
+---
 
 ## 🎯 Vérification post-installation
 
@@ -309,6 +337,8 @@ wp theme list
 wp plugin list
 ```
 
+---
+
 ## 📞 Besoin d'aide ?
 
 Si les solutions ci-dessus ne fonctionnent pas :
@@ -323,6 +353,8 @@ Si les solutions ci-dessus ne fonctionnent pas :
    - Les messages d'erreur complets
    - Votre environnement (OVH Performance, OVH Pro, etc.)
    - La version de votre formule d'hébergement
+
+---
 
 ## 🔗 Ressources OVH
 

@@ -16,12 +16,16 @@ docs/
 │   └── a.security-maintainer.md
 ├── prompts/                  # Prompts de tâches ponctuelles
 │   └── archived/             # Prompts obsolètes
-└── project/                  # Documentation technique
-    ├── architecture.md
-    ├── technical-requirements.md
-    ├── security.md
-    ├── ai-collaboration.md
-    └── roles.md
+├── project/                  # Documentation technique
+│   ├── architecture.md
+│   ├── technical-requirements.md
+│   ├── security.md
+│   ├── changelog.md
+│   ├── improvements.md
+│   ├── ai-collaboration.md
+│   └── roles.md
+└── troubleshooting/          # Guides de dépannage
+    └── ovh.md
 ```
 
 ## Navigation rapide
@@ -33,6 +37,14 @@ docs/
 | [project/architecture.md](project/architecture.md) | Architecture et structure du toolkit |
 | [project/technical-requirements.md](project/technical-requirements.md) | Prérequis système et dépendances |
 | [project/security.md](project/security.md) | Mesures de sécurité implémentées |
+| [project/changelog.md](project/changelog.md) | Historique des versions |
+| [project/improvements.md](project/improvements.md) | Roadmap et améliorations futures |
+
+### Dépannage
+
+| Guide | Description |
+|-------|-------------|
+| [troubleshooting/ovh.md](troubleshooting/ovh.md) | Dépannage hébergements OVH |
 
 ### Collaboration IA
 
@@ -74,7 +86,10 @@ La documentation utilisateur principale se trouve à la racine du projet :
 - [README.md](../README.md) - Guide d'installation et utilisation
 - [SECURITY.md](../SECURITY.md) - Politique de sécurité
 - [CHANGELOG.md](../CHANGELOG.md) - Historique des versions
+- [IMPROVEMENTS.md](../IMPROVEMENTS.md) - Roadmap et améliorations
 - [TROUBLESHOOTING-OVH.md](../TROUBLESHOOTING-OVH.md) - Guide OVH
+
+> **Note** : Les fichiers à la racine sont les sources de référence. Les copies dans `docs/` facilitent la navigation mais doivent rester synchronisées avec les originaux.
 
 ## Conventions
 

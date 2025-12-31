@@ -9,6 +9,8 @@ Ce dossier contient la documentation technique durable du WP Adjuvans Starter Ki
 | [architecture.md](architecture.md) | Architecture technique du toolkit |
 | [technical-requirements.md](technical-requirements.md) | Prérequis et dépendances système |
 | [security.md](security.md) | Mesures de sécurité implémentées |
+| [changelog.md](changelog.md) | Historique des versions |
+| [improvements.md](improvements.md) | Roadmap et améliorations futures |
 | [ai-collaboration.md](ai-collaboration.md) | Guide de collaboration avec l'IA |
 | [roles.md](roles.md) | Rôles et responsabilités (mapping agents) |
 

@@ -1,5 +1,10 @@
 # Changelog
 
+> **Note** : Ce fichier est une copie de [CHANGELOG.md](../../CHANGELOG.md) à la racine du projet.
+> Pour les contributions, modifiez le fichier à la racine.
+
+---
+
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
@@ -187,7 +192,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Support
 
 - **Issues**: [GitHub Issues](https://github.com/adjuvans/wp-adjuvans-starter-kit/issues)
-- **Security**: See SECURITY.md
+- **Security**: See [security.md](security.md)
 - **Email**: support@adjuvans.fr
 
 ---

@@ -1,5 +1,10 @@
 # Project Improvements & Future Enhancements
 
+> **Note** : Ce fichier est une copie de [IMPROVEMENTS.md](../../IMPROVEMENTS.md) à la racine du projet.
+> Pour les contributions, modifiez le fichier à la racine.
+
+---
+
 This document tracks the improvements made during the refactoring and suggests future enhancements.
 
 ---
@@ -73,8 +78,6 @@ This document tracks the improvements made during the refactoring and suggests f
 - Add tests for permission enforcement
 - Implement CI/CD pipeline (GitHub Actions)
 
-**Estimated effort**: 2-3 days
-
 **Files to create**:
 ```
 tests/
@@ -94,8 +97,6 @@ Create `cli/plugins-install.sh` that:
 - Installs recommended plugins from a config list
 - Allows custom plugin lists per project
 - Handles plugin activation and basic configuration
-
-**Estimated effort**: 1 day
 
 **Example implementation**:
 ```bash
@@ -119,8 +120,6 @@ Create `cli/restore.sh` that:
 - Imports database via WP-CLI
 - Restores file permissions
 
-**Estimated effort**: 1 day
-
 ### Priority: Medium
 
 #### 4. Environment Detection
@@ -131,8 +130,6 @@ Create `cli/restore.sh` that:
 - Detect shared hosting provider (OVH, o2switch, etc.)
 - Auto-configure paths and settings based on environment
 - Warn about environment-specific limitations
-
-**Estimated effort**: 2 days
 
 #### 5. WordPress Security Scan
 
@@ -146,8 +143,6 @@ Create `cli/security-scan.sh` that:
 - Checks for outdated plugins/themes
 - Reviews user accounts for weak passwords
 
-**Estimated effort**: 2 days
-
 #### 6. Staging Environment Support
 
 **Current state**: Single environment only.
@@ -157,8 +152,6 @@ Create `cli/security-scan.sh` that:
 - Separate configs per environment
 - Migration script between environments
 - Search/replace URLs automatically
-
-**Estimated effort**: 3 days
 
 #### 7. Cron Job Setup
 
@@ -170,8 +163,6 @@ Create `cli/setup-cron.sh` that:
 - Configures WordPress cron
 - Schedules log cleanup
 - Allows customizable backup frequency
-
-**Estimated effort**: 1 day
 
 ### Priority: Low
 
@@ -197,8 +188,6 @@ Developers needing theme compilation workflows should set up their own build pip
 - Per-site backups
 - Domain mapping configuration
 
-**Estimated effort**: 4 days
-
 #### 10. Docker Option
 
 **Current state**: No Docker support.
@@ -207,8 +196,6 @@ Developers needing theme compilation workflows should set up their own build pip
 - Optional `docker-compose.yml` for local development
 - Maintain compatibility with shared hosting
 - Easy switch between Docker and traditional setup
-
-**Estimated effort**: 1 day
 
 ---
 
@@ -338,7 +325,7 @@ After implementation, we expect:
 
 ## 📅 Suggested Roadmap
 
-### Phase 1: Core Stability (1 week)
+### Phase 1: Core Stability
 - ✅ Security fixes
 - ✅ Bug fixes
 - ✅ Documentation
@@ -346,20 +333,20 @@ After implementation, we expect:
 - 🔄 Integration testing
 - 🔄 User acceptance testing
 
-### Phase 2: Feature Completeness (2 weeks)
+### Phase 2: Feature Completeness
 - Restore script
 - Plugin installer
 - Security scanner
 - Cron setup
 - Complete test suite
 
-### Phase 3: Advanced Features (1 month)
+### Phase 3: Advanced Features
 - Staging environments
 - Multi-site support
 - Docker option
 - Theme workflow improvements
 
-### Phase 4: Community & Polish (Ongoing)
+### Phase 4: Community & Polish
 - Video tutorials
 - Hosting-specific guides
 - Performance optimizations
