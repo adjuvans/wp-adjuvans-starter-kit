@@ -2,7 +2,9 @@
 # secure-wp-config.sh - Secure wp-config.php generation
 # Generates WordPress configuration without exposing credentials in process list
 
-set -euo pipefail
+set -eu
+# pipefail only if available (bash)
+[ -n "${BASH_VERSION:-}" ] && set -o pipefail || true
 
 # Load dependencies
 # Note: SCRIPT_DIR is inherited from the calling script (install-wordpress.sh)

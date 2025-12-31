@@ -2,7 +2,9 @@
 # install-wordpress.sh - Secure WordPress installation
 # Installs WordPress WITHOUT exposing credentials in process list
 
-set -euo pipefail
+set -eu
+# pipefail only if available (bash)
+[ -n "${BASH_VERSION:-}" ] && set -o pipefail || true
 
 # Set script directory
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"

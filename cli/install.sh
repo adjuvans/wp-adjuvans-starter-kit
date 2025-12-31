@@ -2,7 +2,9 @@
 # install.sh - Interactive WordPress installation wizard
 # This is the main entry point for setting up a new WordPress site
 
-set -euo pipefail
+set -eu
+# pipefail only if available (bash)
+[ -n "${BASH_VERSION:-}" ] && set -o pipefail || true
 
 # Load dependencies
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"

@@ -2,7 +2,9 @@
 # diagnose-php.sh - Diagnostic PHP for OVH shared hosting
 # This script helps identify which PHP binary is available on your system
 
-set -euo pipefail
+set -eu
+# pipefail only if available (bash)
+[ -n "${BASH_VERSION:-}" ] && set -o pipefail || true
 
 echo "=========================================="
 echo "PHP DIAGNOSTIC FOR SHARED HOSTING"

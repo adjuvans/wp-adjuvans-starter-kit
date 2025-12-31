@@ -2,7 +2,9 @@
 # backup.sh - Create secure backups of WordPress installation and database
 # Supports optional GPG encryption for sensitive data
 
-set -euo pipefail
+set -eu
+# pipefail only if available (bash)
+[ -n "${BASH_VERSION:-}" ] && set -o pipefail || true
 
 # Set script directory
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"

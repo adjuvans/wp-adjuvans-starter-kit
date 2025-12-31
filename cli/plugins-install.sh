@@ -1,7 +1,9 @@
 #!/bin/sh
 # plugins-install.sh - Interactive plugin installer
 
-set -euo pipefail
+set -eu
+# pipefail only if available (bash)
+[ -n "${BASH_VERSION:-}" ] && set -o pipefail || true
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 CONFIG_FILE="${SCRIPT_DIR}/../config/config.sh"
