@@ -1,5 +1,5 @@
 .PHONY: help check init install install-phpwpinfo backup clean test diagnose-php \
-       plugins-install list-plugins list-themes install-plugin install-theme activate-theme
+       install-plugins install-themes list-plugins list-themes install-plugin install-theme activate-theme
 
 # Default target
 .DEFAULT_GOAL := help
@@ -46,9 +46,13 @@ install-phpwpinfo: ## Install phpwpinfo diagnostic tool
 
 ##@ Plugins & Themes
 
-plugins-install: ## Run interactive plugin installation wizard
+install-plugins: ## Run interactive plugin installation wizard
 	@echo "$(BLUE)Starting plugin installer...$(NC)"
-	@./cli/plugins-install.sh
+	@./cli/install-plugins.sh
+
+install-themes: ## Run interactive theme installation wizard
+	@echo "$(BLUE)Starting theme installer...$(NC)"
+	@./cli/install-themes.sh
 
 install-plugin: ## Install a plugin (usage: make install-plugin PLUGIN=<slug>)
 	@if [ -z "$(PLUGIN)" ]; then \
