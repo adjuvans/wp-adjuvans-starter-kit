@@ -1,5 +1,6 @@
 .PHONY: help check init install install-phpwpinfo backup clean test diagnose-php \
-       install-plugins install-themes list-plugins list-themes install-plugin install-theme activate-theme
+       install-plugins install-themes list-plugins list-themes install-plugin install-theme activate-theme \
+       git-aliases
 
 # Default target
 .DEFAULT_GOAL := help
@@ -245,3 +246,9 @@ config-check: ## Validate configuration file syntax
 	else \
 		echo "$(YELLOW)Configuration file not found$(NC)"; \
 	fi
+
+git-aliases: ## Enable git aliases for this repository
+	@echo "$(BLUE)Configuring git aliases...$(NC)"
+	@git config --local include.path .gitconfig
+	@echo "$(GREEN)✓ Git aliases enabled for this repository$(NC)"
+	@echo "$(YELLOW)Available aliases: st, co, br, ci, lg, lgp, pl, ps, etc.$(NC)"

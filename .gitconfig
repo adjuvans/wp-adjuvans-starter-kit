@@ -1,0 +1,71 @@
+[color]
+    ui = true
+    status = true
+    diff = true
+    branch = true
+    interactive = true
+    pager = true
+
+[core]
+    excludesfile = ~/.gitignore_global
+    autocrlf = false
+
+[diff]
+    tool = vimdiff
+
+[merge]
+    tool = vimdiff
+
+[push]
+    default = simple
+
+[commit]
+    template = ~/.stCommitMsg
+
+[filter "lfs"]
+    required = true
+    clean = git-lfs clean -- %f
+    smudge = git-lfs smudge -- %f
+    process = git-lfs filter-process
+
+[init]
+    defaultBranch = master
+
+[alias]
+    # Submodules
+    subupdate = submodule update --init --recursive
+    subup = submodule update --init --recursive
+
+    # Clone
+    cloner = clone --recursive
+    clr = clone --recursive
+    cl = clone
+
+    # Basic commands
+    co = checkout
+    br = branch
+    ci = commit
+    st = status
+    fc = fetch
+    mg = merge
+    rb = rebase
+    rs = reset
+    rv = revert
+    pl = pull
+    ps = push
+
+    # Undo operations
+    unstage = reset HEAD --
+    us = reset HEAD --
+    unmodify = checkout --
+    um = checkout --
+
+    # Log
+    lg = log --graph
+    lgp = log --graph --pretty=tformat:'%Cred%h%Creset -%C(yellow)%d%Creset%s %C(blue)(%an)%Creset %Cgreen(%cd - %cr)%Creset' --abbrev-commit --date=local
+    last = log -1 HEAD
+
+    # Utilities
+    cf = cat-file -p
+    trackbranch = branch --set-upstream
+    pushtrack = push -u
