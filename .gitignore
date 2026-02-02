@@ -50,6 +50,10 @@ wordfence-waf.php
 # AI FILES
 # ============================================================================
 .claude
+CLAUDE.md
+.gitmodules
+docs/agents-library/
+docs/agents/agents
 
 # ============================================================================
 # COMPRESSED ARCHIVES

@@ -620,6 +620,22 @@ USE_GPG_ENCRYPTION="false"
 
 ---
 
+## 🤖 Claude Agents (Optional)
+
+For enhanced AI-assisted development with Claude Code, you can install the Claude Agents library:
+
+```bash
+# Add the submodule
+git submodule add https://github.com/adjuvans/claude-agents.git docs/agents-library
+
+# Copy the CLAUDE.md template to the root
+cp docs/agents-library/templates/CLAUDE.md.template CLAUDE.md
+```
+
+> **Note:** This library is optional and intended for personal use with Claude Code. It is not versioned in the main repository.
+
+---
+
 ## 🤝 Contributing
 
 Contributions are welcome! Please follow these guidelines:
