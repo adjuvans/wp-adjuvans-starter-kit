@@ -153,22 +153,44 @@ log_separator
 # Step 3: Install WordPress database
 log_section "STEP 3/4: INSTALLING WORDPRESS DATABASE"
 
+# We need to install WordPress with admin credentials
+# SECURITY FIX: Use a temporary admin password, then update it via WP-CLI user update
+log_info "Creating WordPress database tables..."
+
+# Generate a temporary random password for initial installation
+log_info "Generating temporary admin password..."
+# Use dd with count instead of head to avoid potential blocking issues
+TEMP_ADMIN_PASS=$(dd if=/dev/urandom bs=32 count=1 2>/dev/null | LC_ALL=C tr -dc 'A-Za-z0-9!@#$%^&*()_+' | head -c 32)
+log_info "Temporary password generated successfully"
+
+# Create a temporary file with restrictive permissions for the admin password
+log_info "Creating temporary password file..."
+TEMP_PASS_FILE=$(mktemp)
+chmod 600 "$TEMP_PASS_FILE"
+echo "$TEMP_ADMIN_PASS" > "$TEMP_PASS_FILE"
+
+# Ensure cleanup on exit
+trap 'rm -f "$TEMP_PASS_FILE"' EXIT INT TERM
+
+# Go back to WordPress directory for WP-CLI commands
+cd "$directory_public" || log_fatal "Cannot access directory: ${directory_public}"
+
 # Check for orphan tables (tables exist but WordPress not fully installed)
 # This can happen if a previous installation failed mid-way
 log_info "Checking database state..."
 
-# Function to check if tables with our prefix exist
-check_existing_tables() {
-    # Use WP-CLI to query the database for tables with our prefix
-    table_count=$($PHP_BIN "../${file_wpcli_phar}" db query "SHOW TABLES LIKE '${db_prefix}%'" --skip-column-names 2>/dev/null | wc -l | tr -d ' ')
-    echo "$table_count"
-}
-
-EXISTING_TABLES=$(check_existing_tables)
+# Use wp db tables to list tables (reads prefix from wp-config.php)
+EXISTING_TABLES=$($PHP_BIN "../${file_wpcli_phar}" db tables --all-tables 2>/dev/null | wc -l | tr -d ' ') || EXISTING_TABLES=0
 WP_INSTALLED=$($PHP_BIN "../${file_wpcli_phar}" core is-installed 2>/dev/null && echo "yes" || echo "no")
 
+# Get the actual prefix from wp-config.php for display
+ACTUAL_PREFIX=$($PHP_BIN "../${file_wpcli_phar}" config get table_prefix 2>/dev/null) || ACTUAL_PREFIX="$db_prefix"
+
+log_info "Found ${EXISTING_TABLES} tables with prefix '${ACTUAL_PREFIX}'"
+log_info "WordPress fully installed: ${WP_INSTALLED}"
+
 if [ "$EXISTING_TABLES" -gt 0 ] && [ "$WP_INSTALLED" = "no" ]; then
-    log_warn "Detected ${EXISTING_TABLES} existing tables with prefix '${db_prefix}' but WordPress is not fully installed"
+    log_warn "Detected ${EXISTING_TABLES} existing tables with prefix '${ACTUAL_PREFIX}' but WordPress is not fully installed"
     log_warn "This usually happens when a previous installation failed"
     echo ""
     echo "${YELLOW}${BOLD}Options:${NORMAL}"
@@ -196,28 +218,6 @@ if [ "$EXISTING_TABLES" -gt 0 ] && [ "$WP_INSTALLED" = "no" ]; then
             ;;
     esac
 fi
-
-# We need to install WordPress with admin credentials
-# SECURITY FIX: Use a temporary admin password, then update it via WP-CLI user update
-log_info "Creating WordPress database tables..."
-
-# Generate a temporary random password for initial installation
-log_info "Generating temporary admin password..."
-# Use dd with count instead of head to avoid potential blocking issues
-TEMP_ADMIN_PASS=$(dd if=/dev/urandom bs=32 count=1 2>/dev/null | LC_ALL=C tr -dc 'A-Za-z0-9!@#$%^&*()_+' | head -c 32)
-log_info "Temporary password generated successfully"
-
-# Create a temporary file with restrictive permissions for the admin password
-log_info "Creating temporary password file..."
-TEMP_PASS_FILE=$(mktemp)
-chmod 600 "$TEMP_PASS_FILE"
-echo "$TEMP_ADMIN_PASS" > "$TEMP_PASS_FILE"
-
-# Ensure cleanup on exit
-trap 'rm -f "$TEMP_PASS_FILE"' EXIT INT TERM
-
-# Go back to WordPress directory for WP-CLI commands
-cd "$directory_public" || log_fatal "Cannot access directory: ${directory_public}"
 
 # Check if WordPress is already installed
 log_info "Checking if WordPress is already installed..."
