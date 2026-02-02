@@ -177,19 +177,32 @@ cd "$directory_public" || log_fatal "Cannot access directory: ${directory_public
 
 # Check for orphan tables (tables exist but WordPress not fully installed)
 # This can happen if a previous installation failed mid-way
+echo "=== ORPHAN TABLE CHECK ===" # DEBUG
 log_info "Checking database state..."
 
-# Use wp db tables to list tables (reads prefix from wp-config.php)
-EXISTING_TABLES=$($PHP_BIN "../${file_wpcli_phar}" db tables --all-tables 2>/dev/null | wc -l | tr -d ' ') || EXISTING_TABLES=0
-WP_INSTALLED=$($PHP_BIN "../${file_wpcli_phar}" core is-installed 2>/dev/null && echo "yes" || echo "no")
-
-# Get the actual prefix from wp-config.php for display
+# Get the table prefix from wp-config.php
+echo "DEBUG: Getting table prefix..." # DEBUG
 ACTUAL_PREFIX=$($PHP_BIN "../${file_wpcli_phar}" config get table_prefix 2>/dev/null) || ACTUAL_PREFIX="$db_prefix"
+echo "DEBUG: Prefix = ${ACTUAL_PREFIX}" # DEBUG
 
-log_info "Found ${EXISTING_TABLES} tables with prefix '${ACTUAL_PREFIX}'"
-log_info "WordPress fully installed: ${WP_INSTALLED}"
+# Query database directly for tables with this prefix (more reliable than wp db tables)
+echo "DEBUG: Querying tables..." # DEBUG
+EXISTING_TABLES=$($PHP_BIN "../${file_wpcli_phar}" db query "SHOW TABLES LIKE '${ACTUAL_PREFIX}%'" --skip-column-names 2>/dev/null | wc -l | tr -d ' ')
+if [ -z "$EXISTING_TABLES" ]; then
+    EXISTING_TABLES=0
+fi
+echo "DEBUG: Found ${EXISTING_TABLES} tables" # DEBUG
+
+# Check if WordPress is fully installed
+echo "DEBUG: Checking if WP installed..." # DEBUG
+WP_INSTALLED="no"
+if $PHP_BIN "../${file_wpcli_phar}" core is-installed 2>/dev/null; then
+    WP_INSTALLED="yes"
+fi
+echo "DEBUG: WP_INSTALLED = ${WP_INSTALLED}" # DEBUG
 
 if [ "$EXISTING_TABLES" -gt 0 ] && [ "$WP_INSTALLED" = "no" ]; then
+    echo ""
     log_warn "Detected ${EXISTING_TABLES} existing tables with prefix '${ACTUAL_PREFIX}' but WordPress is not fully installed"
     log_warn "This usually happens when a previous installation failed"
     echo ""
