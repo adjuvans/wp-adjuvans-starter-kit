@@ -15,6 +15,8 @@ Run commands with `make <command>`:
 | `make install` | Run interactive WordPress installation wizard |
 | `make install-wordpress` | Install WordPress (requires existing config) |
 | `make diagnose-php` | Diagnose PHP installation and environment |
+| `make multisite-install` | Convert WordPress to Multisite network |
+| `make multisite-convert` | Convert existing site with content to Multisite |
 
 ### Plugins & Themes
 
@@ -269,6 +271,103 @@ Checks:
 - curl
 - tar, gzip
 - Optional: GPG, WP-CLI
+
+---
+
+### install-multisite.sh
+
+Convert WordPress to Multisite network.
+
+```bash
+./cli/install-multisite.sh [OPTIONS]
+```
+
+**Requirements:**
+- WordPress 6.0+ already installed
+- WordPress at domain root (not in /blog/ or subdirectory)
+- WP-CLI available
+
+**Options:**
+
+| Option | Description |
+|--------|-------------|
+| `-h, --help` | Show help |
+| `-m, --mode MODE` | Multisite mode: 'subdomain' or 'subdirectory' |
+| `-t, --title TITLE` | Network title (default: site title) |
+| `-n, --dry-run` | Simulate without changes |
+| `--skip-checks` | Skip compatibility checks |
+
+**Multisite Modes:**
+
+| Mode | URL Format | Best For |
+|------|------------|----------|
+| `subdirectory` | example.com/site1/ | Shared hosting (recommended) |
+| `subdomain` | site1.example.com | Dedicated hosting with DNS control |
+
+**Examples:**
+
+```bash
+# Interactive mode
+./cli/install-multisite.sh
+
+# Subdirectory mode (recommended for shared hosting)
+./cli/install-multisite.sh --mode=subdirectory
+
+# Subdomain mode
+./cli/install-multisite.sh --mode=subdomain
+
+# Dry run
+./cli/install-multisite.sh --mode=subdirectory --dry-run
+```
+
+**Subdomain Mode Notes:**
+- Requires DNS wildcard record (*.example.com) OR manual DNS entries for each site
+- May require wildcard SSL certificate
+- Individual DNS records can be created manually if wildcard is not available
+
+---
+
+### convert-to-multisite.sh
+
+Convert existing WordPress site with content to Multisite.
+
+```bash
+./cli/convert-to-multisite.sh [OPTIONS]
+```
+
+This script is specifically for sites that already have content (posts, pages, users). It:
+- Analyzes your existing content
+- Recommends a backup before conversion
+- Confirms content preservation
+- Calls install-multisite.sh for the actual conversion
+
+**Options:**
+
+| Option | Description |
+|--------|-------------|
+| `-h, --help` | Show help |
+| `-m, --mode MODE` | Multisite mode: 'subdomain' or 'subdirectory' |
+| `-n, --dry-run` | Simulate without changes |
+| `--force` | Skip content warning |
+
+**What happens to your content:**
+- Posts remain on the main site
+- Pages remain on the main site
+- Users keep their roles
+- Media files stay in place
+
+**Examples:**
+
+```bash
+# Interactive conversion
+./cli/convert-to-multisite.sh
+
+# Convert with subdirectory mode
+./cli/convert-to-multisite.sh --mode=subdirectory
+
+# Force conversion without content warning
+./cli/convert-to-multisite.sh --force
+```
 
 ---
 

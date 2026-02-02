@@ -1,6 +1,6 @@
 .PHONY: help check init install install-phpwpinfo backup restore list-backups clean test diagnose-php \
        install-plugins install-themes list-plugins list-themes install-plugin install-theme activate-theme \
-       git-setup toolkit-version release-check security-scan setup-wpscan
+       git-setup toolkit-version release-check security-scan setup-wpscan adopt multisite-install multisite-convert
 
 # Default target
 .DEFAULT_GOAL := help
@@ -44,6 +44,18 @@ install-wordpress: init ## Install WordPress (requires existing config)
 install-phpwpinfo: ## Install phpwpinfo diagnostic tool
 	@echo "$(BLUE)Installing phpwpinfo...$(NC)"
 	@./cli/install-phpwpinfo.sh
+
+adopt: ## Adopt an existing WordPress site (interactive)
+	@echo "$(BLUE)Starting site adoption...$(NC)"
+	@./cli/adopt-site.sh
+
+multisite-install: ## Convert WordPress to Multisite network
+	@echo "$(BLUE)Starting multisite installation...$(NC)"
+	@./cli/install-multisite.sh
+
+multisite-convert: ## Convert existing site with content to Multisite
+	@echo "$(BLUE)Starting multisite conversion...$(NC)"
+	@./cli/convert-to-multisite.sh
 
 ##@ Plugins & Themes
 

@@ -8,6 +8,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- `cli/install-multisite.sh` - WordPress Multisite installation
+  - Interactive mode selection (subdomain or subdirectory)
+  - Subdirectory mode recommended for shared hosting
+  - Subdomain mode with DNS wildcard or manual DNS warnings
+  - WordPress 6.0+ version requirement
+  - WordPress at domain root validation
+  - Automatic wp-config.php and .htaccess configuration
+  - Pre-installation backups
+  - Dry-run mode (`--dry-run`)
+- `make multisite-install` - Convert WordPress to Multisite
+- `cli/convert-to-multisite.sh` - Convert existing site with content
+  - Analyzes existing content (posts, pages, users, media)
+  - Recommends backup before conversion
+  - Content preservation confirmation
+  - Wrapper around install-multisite.sh with additional safety checks
+- `make multisite-convert` - Convert existing site to Multisite
 - `cli/security-scan.sh` - WordPress security scanner
   - Core integrity verification (checksums)
   - Plugin/theme update checks
@@ -39,6 +55,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `tests/bats/test-backup.bats` - Tests for backup.sh
   - `tests/helpers/test-helper.bash` - Common test utilities
   - `tests/fixtures/` - Test fixtures and mock data
+- `cli/adopt-site.sh` - Adopt existing WordPress sites
+  - Auto-detect WordPress configuration from wp-config.php
+  - Validate standard installation structure
+  - Detect and reject non-standard installations (Bedrock, custom wp-content)
+  - Generate config/config.sh from existing site
+  - Test database connection
+  - Verify WPASK tools compatibility
+  - Interactive and automatic modes (`--auto`)
+  - Dry-run mode (`--dry-run`)
+- `make adopt` - Adopt an existing WordPress site
 - Documentation improvements:
   - `SECURITY.md` - Security policy and vulnerability reporting
   - `CONTRIBUTING.md` - Contribution guidelines
