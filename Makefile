@@ -1,4 +1,4 @@
-.PHONY: help check init install install-phpwpinfo backup clean test diagnose-php \
+.PHONY: help check init install install-phpwpinfo backup restore list-backups clean test diagnose-php \
        install-plugins install-themes list-plugins list-themes install-plugin install-theme activate-theme \
        git-setup
 
@@ -115,6 +115,13 @@ list-themes: ## List installed WordPress themes
 backup: ## Create encrypted backup of WordPress and database
 	@echo "$(BLUE)Creating backup...$(NC)"
 	@./cli/backup.sh
+
+restore: ## Restore WordPress from backup (interactive)
+	@echo "$(BLUE)Starting restore...$(NC)"
+	@./cli/restore.sh
+
+list-backups: ## List available backups
+	@./cli/restore.sh --list
 
 ##@ Development
 
