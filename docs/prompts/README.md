@@ -12,7 +12,9 @@ Ce dossier contient les prompts de tâches ponctuelles ou procédures spécifiqu
 
 ## Contenu actuel
 
-*Aucun prompt de tâche actif pour le moment.*
+| Prompt | Description | Statut |
+|--------|-------------|--------|
+| [roadmap-v3.md](roadmap-v3.md) | Roadmap v3.0 - Restore, CI/CD, Security Scan, Multisite, Adoption | **Valide PO** - Pret |
 
 ## Sous-dossiers
 
