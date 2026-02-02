@@ -14,7 +14,7 @@ Ce dossier contient les prompts de tâches ponctuelles ou procédures spécifiqu
 
 | Prompt | Description | Statut |
 |--------|-------------|--------|
-| [roadmap-v3.md](roadmap-v3.md) | Roadmap v3.0 - Restore, CI/CD, Security Scan, Multisite, Adoption | **Valide PO** - Pret |
+| [roadmap-v3.md](roadmap-v3.md) | Roadmap v3.x - 8 US : Restore, CI/CD, Security, Multisite, Adoption, Docs, Versioning | **Valide PO** - Pret |
 
 ## Sous-dossiers
 
