@@ -153,6 +153,50 @@ log_separator
 # Step 3: Install WordPress database
 log_section "STEP 3/4: INSTALLING WORDPRESS DATABASE"
 
+# Check for orphan tables (tables exist but WordPress not fully installed)
+# This can happen if a previous installation failed mid-way
+log_info "Checking database state..."
+
+# Function to check if tables with our prefix exist
+check_existing_tables() {
+    # Use WP-CLI to query the database for tables with our prefix
+    table_count=$($PHP_BIN "../${file_wpcli_phar}" db query "SHOW TABLES LIKE '${db_prefix}%'" --skip-column-names 2>/dev/null | wc -l | tr -d ' ')
+    echo "$table_count"
+}
+
+EXISTING_TABLES=$(check_existing_tables)
+WP_INSTALLED=$($PHP_BIN "../${file_wpcli_phar}" core is-installed 2>/dev/null && echo "yes" || echo "no")
+
+if [ "$EXISTING_TABLES" -gt 0 ] && [ "$WP_INSTALLED" = "no" ]; then
+    log_warn "Detected ${EXISTING_TABLES} existing tables with prefix '${db_prefix}' but WordPress is not fully installed"
+    log_warn "This usually happens when a previous installation failed"
+    echo ""
+    echo "${YELLOW}${BOLD}Options:${NORMAL}"
+    echo "  ${GREEN}1)${NORMAL} Reset database (delete existing tables and start fresh)"
+    echo "  ${GREEN}2)${NORMAL} Cancel installation"
+    echo ""
+    printf "${YELLOW}Choose an option (1/2): ${NORMAL}"
+    read -r db_choice
+
+    case "$db_choice" in
+        1)
+            log_info "Resetting database..."
+            if $PHP_BIN "../${file_wpcli_phar}" db reset --yes 2>&1; then
+                log_success "Database reset successfully"
+            else
+                log_fatal "Failed to reset database. Please check your database permissions."
+            fi
+            ;;
+        *)
+            log_info "Installation cancelled by user"
+            echo ""
+            echo "You can manually reset the database with:"
+            echo "  ${GREEN}cd wordpress && php ../wp-cli.phar db reset --yes${NORMAL}"
+            exit 0
+            ;;
+    esac
+fi
+
 # We need to install WordPress with admin credentials
 # SECURITY FIX: Use a temporary admin password, then update it via WP-CLI user update
 log_info "Creating WordPress database tables..."

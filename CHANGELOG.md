@@ -72,6 +72,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `docs/project/backup-restore.md` - Backup and restore guide
 
 ### Changed
+- `cli/install-wordpress.sh` - Detect orphan database tables from failed installations
+  - Automatically detects tables with configured prefix when WordPress is not fully installed
+  - Offers to reset database and start fresh
+  - Prevents cryptic "tables unavailable" errors
 - `make test` now runs bats-core tests (requires bats-core installed)
 
 ## [2.1.0] - 2026-02-02
