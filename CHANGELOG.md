@@ -8,10 +8,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Nothing yet
+- `.github/workflows/ci.yml` - CI/CD pipeline with GitHub Actions
+  - ShellCheck linting for all shell scripts
+  - Syntax validation for shell scripts
+  - bats-core test execution
+  - Test matrix: Ubuntu + macOS
+  - Security scan for hardcoded secrets
+- `tests/` directory with bats-core test framework
+  - `tests/bats/test-colors.bats` - Tests for colors.sh
+  - `tests/bats/test-logger.bats` - Tests for logger.sh
+  - `tests/bats/test-validators.bats` - Tests for validators.sh (40+ tests)
+  - `tests/bats/test-restore.bats` - Tests for restore.sh
+  - `tests/bats/test-backup.bats` - Tests for backup.sh
+  - `tests/helpers/test-helper.bash` - Common test utilities
+  - `tests/fixtures/` - Test fixtures and mock data
 
 ### Changed
-- Nothing yet
+- `make test` now runs bats-core tests (requires bats-core installed)
 
 ### Fixed
 - Nothing yet

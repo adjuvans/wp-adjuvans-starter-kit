@@ -125,8 +125,15 @@ list-backups: ## List available backups
 
 ##@ Development
 
-test: ## Run test suite (if available)
-	@echo "$(YELLOW)Test suite coming soon...$(NC)"
+test: ## Run test suite with bats-core
+	@if command -v bats >/dev/null 2>&1; then \
+		echo "$(BLUE)Running bats tests...$(NC)"; \
+		bats tests/bats/ --formatter pretty; \
+	else \
+		echo "$(RED)bats-core not installed$(NC)"; \
+		echo "Install with: brew install bats-core (macOS) or apt install bats (Ubuntu)"; \
+		exit 1; \
+	fi
 
 lint: ## Check shell scripts for syntax errors
 	@echo "$(BLUE)Linting shell scripts...$(NC)"
