@@ -1,6 +1,6 @@
 .PHONY: help check init install install-phpwpinfo backup restore list-backups clean test diagnose-php \
        install-plugins install-themes list-plugins list-themes install-plugin install-theme activate-theme \
-       git-setup
+       git-setup toolkit-version release-check
 
 # Default target
 .DEFAULT_GOAL := help
@@ -259,3 +259,47 @@ git-setup: ## Setup git configuration for this repository
 	@cat .gitconfig >> .git/config
 	@echo "$(GREEN)✓ Git configuration applied$(NC)"
 	@echo "$(YELLOW)Available aliases: st, co, br, ci, lg, lgp, pl, ps, etc.$(NC)"
+
+##@ Release Management
+
+toolkit-version: ## Show WPASK toolkit version
+	@if [ -f VERSION ]; then \
+		echo "$(BLUE)WP Adjuvans Starter Kit$(NC) v$$(cat VERSION)"; \
+	else \
+		echo "$(YELLOW)VERSION file not found$(NC)"; \
+	fi
+
+release-check: ## Check if ready for release
+	@echo "$(BLUE)Release Checklist:$(NC)"
+	@echo ""
+	@echo "VERSION file:"
+	@if [ -f VERSION ]; then \
+		echo "  $(GREEN)✓$(NC) VERSION: $$(cat VERSION)"; \
+	else \
+		echo "  $(RED)✗$(NC) VERSION file missing"; \
+	fi
+	@echo ""
+	@echo "CHANGELOG.md:"
+	@if [ -f CHANGELOG.md ]; then \
+		echo "  $(GREEN)✓$(NC) CHANGELOG.md exists"; \
+		if grep -q "\[Unreleased\]" CHANGELOG.md; then \
+			UNRELEASED=$$(awk '/## \[Unreleased\]/,/## \[/' CHANGELOG.md | grep -c "^- " || echo "0"); \
+			echo "  $(YELLOW)!$(NC) Unreleased changes: $$UNRELEASED items"; \
+		fi; \
+	else \
+		echo "  $(RED)✗$(NC) CHANGELOG.md missing"; \
+	fi
+	@echo ""
+	@echo "Git status:"
+	@if git diff --quiet 2>/dev/null; then \
+		echo "  $(GREEN)✓$(NC) Working directory clean"; \
+	else \
+		echo "  $(YELLOW)!$(NC) Uncommitted changes present"; \
+	fi
+	@echo ""
+	@echo "$(YELLOW)To release:$(NC)"
+	@echo "  1. Update CHANGELOG.md"
+	@echo "  2. Update VERSION file"
+	@echo "  3. git commit -m 'chore: release vX.Y.Z'"
+	@echo "  4. git tag vX.Y.Z"
+	@echo "  5. git push origin vX.Y.Z"
