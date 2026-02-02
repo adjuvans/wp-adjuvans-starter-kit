@@ -39,12 +39,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `tests/bats/test-backup.bats` - Tests for backup.sh
   - `tests/helpers/test-helper.bash` - Common test utilities
   - `tests/fixtures/` - Test fixtures and mock data
+- Documentation improvements:
+  - `SECURITY.md` - Security policy and vulnerability reporting
+  - `CONTRIBUTING.md` - Contribution guidelines
+  - `docs/project/cli-reference.md` - Complete CLI reference
+  - `docs/project/backup-restore.md` - Backup and restore guide
 
 ### Changed
 - `make test` now runs bats-core tests (requires bats-core installed)
-
-### Fixed
-- Nothing yet
 
 ## [2.1.0] - 2026-02-02
 
@@ -101,7 +103,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/user/wp-adjuvans-starter-kit/compare/v2.1.0...HEAD
-[2.1.0]: https://github.com/user/wp-adjuvans-starter-kit/compare/v2.0.0...v2.1.0
-[2.0.0]: https://github.com/user/wp-adjuvans-starter-kit/compare/v1.0.0...v2.0.0
-[1.0.0]: https://github.com/user/wp-adjuvans-starter-kit/releases/tag/v1.0.0
+[Unreleased]: https://github.com/adjuvans/wp-adjuvans-starter-kit/compare/v2.1.0...HEAD
+[2.1.0]: https://github.com/adjuvans/wp-adjuvans-starter-kit/compare/v2.0.0...v2.1.0
+[2.0.0]: https://github.com/adjuvans/wp-adjuvans-starter-kit/compare/v1.0.0...v2.0.0
+[1.0.0]: https://github.com/adjuvans/wp-adjuvans-starter-kit/releases/tag/v1.0.0

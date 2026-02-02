@@ -4,6 +4,15 @@ Ce dossier contient la documentation technique durable du WP Adjuvans Starter Ki
 
 ## Contenu
 
+### Guides utilisateur
+
+| Document | Description |
+|----------|-------------|
+| [cli-reference.md](cli-reference.md) | Référence complète des commandes CLI |
+| [backup-restore.md](backup-restore.md) | Guide sauvegarde et restauration |
+
+### Documentation technique
+
 | Document | Description |
 |----------|-------------|
 | [architecture.md](architecture.md) | Architecture technique du toolkit |
