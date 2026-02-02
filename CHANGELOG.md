@@ -8,6 +8,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- `cli/security-scan.sh` - WordPress security scanner
+  - Core integrity verification (checksums)
+  - Plugin/theme update checks
+  - File permission audits
+  - wp-config.php security settings
+  - Suspicious file detection
+  - Server configuration checks
+  - WPScan API integration for CVE detection
+  - Security score (A-F grading)
+  - JSON output for automation (`--json`)
+  - Specific checks (`--check=permissions,config`)
+- `cli/setup-wpscan-api.sh` - WPScan API key configuration
+  - Interactive and non-interactive setup
+  - API key validation and testing
+  - Secure storage (600 permissions)
+- `make security-scan` - Run security scan
+- `make setup-wpscan` - Configure WPScan API
 - `.github/workflows/ci.yml` - CI/CD pipeline with GitHub Actions
   - ShellCheck linting for all shell scripts
   - Syntax validation for shell scripts

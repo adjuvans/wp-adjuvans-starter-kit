@@ -1,6 +1,6 @@
 .PHONY: help check init install install-phpwpinfo backup restore list-backups clean test diagnose-php \
        install-plugins install-themes list-plugins list-themes install-plugin install-theme activate-theme \
-       git-setup toolkit-version release-check
+       git-setup toolkit-version release-check security-scan setup-wpscan
 
 # Default target
 .DEFAULT_GOAL := help
@@ -122,6 +122,13 @@ restore: ## Restore WordPress from backup (interactive)
 
 list-backups: ## List available backups
 	@./cli/restore.sh --list
+
+security-scan: ## Run security scan on WordPress installation
+	@echo "$(BLUE)Running security scan...$(NC)"
+	@./cli/security-scan.sh
+
+setup-wpscan: ## Configure WPScan API key for vulnerability scanning
+	@./cli/setup-wpscan-api.sh
 
 ##@ Development
 
