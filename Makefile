@@ -1,7 +1,7 @@
 .PHONY: help check init install install-phpwpinfo backup restore list-backups clean test diagnose-php \
        install-plugins install-themes list-plugins list-themes install-plugin install-theme activate-theme \
-       git-setup toolkit-version release-check dist security-scan setup-wpscan adopt multisite-install multisite-convert \
-       multisite-status
+       git-setup toolkit-version release-check dist publish security-scan setup-wpscan adopt multisite-install multisite-convert \
+       multisite-status update check-update
 
 # Default target
 .DEFAULT_GOAL := help
@@ -336,3 +336,12 @@ release-check: ## Check if ready for release
 
 dist: ## Build distribution tarball (dist/wpask-<version>.tar.gz)
 	@./scripts/build-dist.sh
+
+publish: dist ## Build and publish release to repo.adjuvans.fr
+	@./scripts/publish-release.sh
+
+update: ## Update WPASK to latest version
+	@./cli/self-update.sh
+
+check-update: ## Check if WPASK update is available
+	@./cli/self-update.sh --check
