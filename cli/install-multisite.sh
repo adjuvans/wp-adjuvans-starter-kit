@@ -165,10 +165,13 @@ add_multisite_constants() {
 
     log_info "Adding multisite constants to wp-config.php..."
 
-    # Create backup
+    # Create backup in save/ directory (WordPress dir may have restricted permissions)
     if [ "$dry_run" = "false" ]; then
-        cp "$wp_config" "${wp_config}.pre-multisite.bak"
-        log_info "Backup created: ${wp_config}.pre-multisite.bak"
+        backup_dir="${PROJECT_ROOT}/${directory_save:-save}"
+        mkdir -p "$backup_dir"
+        backup_file="${backup_dir}/wp-config.pre-multisite.$(date +%Y%m%d-%H%M%S).bak"
+        cp "$wp_config" "$backup_file"
+        log_info "Backup created: ${backup_file}"
     fi
 
     # Constants to add before "/* That's all, stop editing! */" or "require_once ABSPATH"
