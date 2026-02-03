@@ -1,5 +1,5 @@
 #!/bin/sh
-# config.sample.sh - Configuration template for WP Adjuvans Starter Kit
+# config.sample.sh - Configuration template for WPASK
 # Copy this file to config.sh and fill in your project details
 #
 # SECURITY WARNING:

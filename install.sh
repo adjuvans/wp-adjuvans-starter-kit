@@ -1,5 +1,5 @@
 #!/bin/sh
-# WPASK Installer - Install WP Adjuvans Starter Kit
+# WPASK Installer
 #
 # Usage:
 #   curl -fsSL https://raw.githubusercontent.com/adjuvans/wp-adjuvans-starter-kit/main/install.sh | sh
@@ -55,7 +55,7 @@ show_banner() {
     ╚███╔███╔╝██║     ██║  ██║███████║██║  ██╗
      ╚══╝╚══╝ ╚═╝     ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝
 
-    WP Adjuvans Starter Kit - Installer
+    WPASK Installer
 
 EOF
 }

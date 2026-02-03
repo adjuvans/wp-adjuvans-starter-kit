@@ -1,4 +1,4 @@
-# WP Adjuvans Starter Kit
+# WPASK
 
 > **A secure, automated WordPress installation toolkit for shared hosting environments**
 
@@ -25,7 +25,7 @@
 
 ## 🎯 Overview
 
-**WP Adjuvans Starter Kit** is a collection of Bash scripts designed to automate WordPress installation and management on **shared hosting environments** (OVH, o2switch, etc.) where you don't have root access or Docker availability.
+**WPASK** (WP Adjuvans Starter Kit) is a collection of Bash scripts designed to automate WordPress installation and management on **shared hosting environments** (OVH, o2switch, etc.) where you don't have root access or Docker availability.
 
 This toolkit provides:
 - **Secure credential handling** (no passwords in process lists)
@@ -132,8 +132,8 @@ curl -fsSL https://raw.githubusercontent.com/adjuvans/wp-adjuvans-starter-kit/ma
 ### Option B: Git Clone
 
 ```bash
-git clone https://github.com/adjuvans/wp-adjuvans-starter-kit.git
-cd wp-adjuvans-starter-kit
+git clone https://github.com/adjuvans/wp-adjuvans-starter-kit.git wpask
+cd wpask
 ```
 
 ### 2. Check Dependencies
@@ -441,7 +441,7 @@ Please see [SECURITY.md](SECURITY.md) for our security policy and how to report 
 ## 📁 Project Structure
 
 ```
-wp-adjuvans-starter-kit/
+wpask/
 ├── cli/                              # CLI scripts
 │   ├── install.sh                    # Main interactive installer
 │   ├── init.sh                       # Environment initialization

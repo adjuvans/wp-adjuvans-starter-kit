@@ -51,7 +51,7 @@ jobs:
       - name: Create release archive
         run: |
           VERSION="${GITHUB_REF#refs/tags/v}"
-          ARCHIVE_NAME="wp-adjuvans-starter-kit-${VERSION}"
+          ARCHIVE_NAME="wpask-${VERSION}"
 
           # Create archive excluding dev files
           tar -czvf "${ARCHIVE_NAME}.tar.gz" \
@@ -88,10 +88,10 @@ jobs:
             ```
 
             ### Manual download
-            Download `wp-adjuvans-starter-kit-*.tar.gz` below and extract:
+            Download `wpask-*.tar.gz` below and extract:
             ```bash
-            tar -xzf wp-adjuvans-starter-kit-*.tar.gz
-            cd wp-adjuvans-starter-kit-*
+            tar -xzf wpask-*.tar.gz
+            cd wpask-*
             make check && make install
             ```
 
@@ -107,7 +107,7 @@ jobs:
           draft: true
           generate_release_notes: true
           files: |
-            wp-adjuvans-starter-kit-*.tar.gz
+            wpask-*.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

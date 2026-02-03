@@ -16,7 +16,7 @@ NC := \033[0m # No Color
 ##@ General
 
 help: ## Display this help message
-	@echo "$(BLUE)WP Adjuvans Starter Kit - Makefile Commands$(NC)"
+	@echo "$(BLUE)WPASK - Makefile Commands$(NC)"
 	@echo ""
 	@awk 'BEGIN {FS = ":.*##"; printf "Usage:\n  make $(GREEN)<target>$(NC)\n"} /^[a-zA-Z_0-9-]+:.*?##/ { printf "  $(GREEN)%-15s$(NC) %s\n", $$1, $$2 } /^##@/ { printf "\n$(BLUE)%s$(NC)\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
 
@@ -294,7 +294,7 @@ git-setup: ## Setup git configuration for this repository
 
 toolkit-version: ## Show WPASK toolkit version
 	@if [ -f VERSION ]; then \
-		echo "$(BLUE)WP Adjuvans Starter Kit$(NC) v$$(cat VERSION)"; \
+		echo "$(BLUE)WPASK$(NC) v$$(cat VERSION)"; \
 	else \
 		echo "$(YELLOW)VERSION file not found$(NC)"; \
 	fi
