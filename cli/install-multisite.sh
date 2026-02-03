@@ -46,6 +46,8 @@ ${YELLOW}OPTIONS${NORMAL}
     -t, --title TITLE       Network title (default: site title)
     -n, --dry-run           Show what would be done without making changes
     --skip-checks           Skip compatibility checks (not recommended)
+    --share-cookies         Enable shared login (SSO) across all sites
+    --no-share-cookies      Disable shared login
 
 ${YELLOW}MULTISITE MODES${NORMAL}
     ${GREEN}subdirectory${NORMAL} (Recommended for shared hosting)
@@ -75,6 +77,9 @@ ${YELLOW}EXAMPLES${NORMAL}
 
     # Subdomain mode
     ./cli/install-multisite.sh --mode=subdomain
+
+    # With shared cookies (SSO)
+    ./cli/install-multisite.sh --mode=subdirectory --share-cookies
 
     # Dry run to see what would happen
     ./cli/install-multisite.sh --mode=subdirectory --dry-run
@@ -222,6 +227,7 @@ update_wp_config_network() {
     local mode="$2"
     local domain="$3"
     local dry_run="$4"
+    local share_cookies="$5"
 
     log_info "Updating wp-config.php with network configuration..."
 
@@ -241,6 +247,17 @@ define( 'PATH_CURRENT_SITE', '/' );
 define( 'SITE_ID_CURRENT_SITE', 1 );
 define( 'BLOG_ID_CURRENT_SITE', 1 );
 "
+
+    # Add shared cookies configuration if requested
+    if [ "$share_cookies" = "true" ]; then
+        network_constants="${network_constants}
+/* Shared cookies - Single Sign-On across all network sites */
+define( 'COOKIE_DOMAIN', '.${domain}' );
+define( 'COOKIEPATH', '/' );
+define( 'SITECOOKIEPATH', '/' );
+define( 'ADMIN_COOKIE_PATH', '/' );
+"
+    fi
 
     if [ "$dry_run" = "true" ]; then
         log_info "[DRY-RUN] Would update wp-config.php with:"
@@ -368,6 +385,7 @@ MULTISITE_MODE=""
 NETWORK_TITLE=""
 DRY_RUN="false"
 SKIP_CHECKS="false"
+SHARE_COOKIES=""
 
 # Parse arguments
 while [ $# -gt 0 ]; do
@@ -398,6 +416,14 @@ while [ $# -gt 0 ]; do
             ;;
         --skip-checks)
             SKIP_CHECKS="true"
+            shift
+            ;;
+        --share-cookies)
+            SHARE_COOKIES="true"
+            shift
+            ;;
+        --no-share-cookies)
+            SHARE_COOKIES="false"
             shift
             ;;
         *)
@@ -612,6 +638,36 @@ log_info "Domain: ${DOMAIN}"
 
 log_separator
 
+# Shared cookies option
+if [ -z "$SHARE_COOKIES" ]; then
+    log_section "SHARED LOGIN (SSO)"
+    echo ""
+    echo "${BOLD}Share user sessions across all network sites?${NORMAL}"
+    echo ""
+    echo "If enabled, users will stay logged in when navigating between"
+    echo "different sites in your network (Single Sign-On)."
+    echo ""
+    echo "  ${GREEN}Yes${NORMAL} - Users log in once for all sites"
+    echo "  ${YELLOW}No${NORMAL}  - Users must log in separately to each site"
+    echo ""
+    printf "${YELLOW}Enable shared cookies/SSO? (Y/n): ${NORMAL}"
+    read -r share_cookies_choice
+
+    if [ "$share_cookies_choice" = "n" ] || [ "$share_cookies_choice" = "N" ]; then
+        SHARE_COOKIES="false"
+    else
+        SHARE_COOKIES="true"
+    fi
+fi
+
+if [ "$SHARE_COOKIES" = "true" ]; then
+    log_success "Shared cookies enabled (SSO)"
+else
+    log_info "Shared cookies disabled"
+fi
+
+log_separator
+
 # Summary before installation
 log_section "INSTALLATION SUMMARY"
 echo ""
@@ -620,6 +676,11 @@ echo "${CYAN}Site URL:${NORMAL}       ${GREEN}${site_url}${NORMAL}"
 echo "${CYAN}Network Title:${NORMAL}  ${GREEN}${NETWORK_TITLE}${NORMAL}"
 echo "${CYAN}Multisite Mode:${NORMAL} ${GREEN}${MULTISITE_MODE}${NORMAL}"
 echo "${CYAN}Domain:${NORMAL}         ${GREEN}${DOMAIN}${NORMAL}"
+if [ "$SHARE_COOKIES" = "true" ]; then
+    echo "${CYAN}Shared Login:${NORMAL}   ${GREEN}Yes (SSO enabled)${NORMAL}"
+else
+    echo "${CYAN}Shared Login:${NORMAL}   ${YELLOW}No${NORMAL}"
+fi
 echo ""
 
 if [ "$DRY_RUN" = "true" ]; then
@@ -702,7 +763,7 @@ log_separator
 # Step 3: Update wp-config.php
 log_section "STEP 3/4: UPDATING WP-CONFIG.PHP"
 
-update_wp_config_network "$WP_CONFIG" "$MULTISITE_MODE" "$DOMAIN" "$DRY_RUN"
+update_wp_config_network "$WP_CONFIG" "$MULTISITE_MODE" "$DOMAIN" "$DRY_RUN" "$SHARE_COOKIES"
 
 log_separator
 
@@ -739,6 +800,12 @@ else
         echo "  ${CYAN}•${NORMAL} New sites will be: ${GREEN}${site_url}/sitename/${NORMAL}"
     fi
     echo ""
+    if [ "$SHARE_COOKIES" = "true" ]; then
+        echo "${YELLOW}Single Sign-On: ${GREEN}Enabled${NORMAL}"
+        echo "  ${CYAN}•${NORMAL} Users will stay logged in across all network sites"
+        echo "  ${CYAN}•${NORMAL} Cookie domain: ${GREEN}.${DOMAIN}${NORMAL}"
+        echo ""
+    fi
     echo "${YELLOW}${BOLD}Next Steps${NORMAL}"
     echo "  1. Visit the Network Admin dashboard"
     echo "  2. Create your first subsite"
