@@ -52,7 +52,8 @@ mkdir -p "${DIST_DIR}/${DIST_NAME}/config"
 cp "${PROJECT_ROOT}/config/config.sample.sh" "${DIST_DIR}/${DIST_NAME}/config/"
 
 # Core files
-cp "${PROJECT_ROOT}/Makefile" "${DIST_DIR}/${DIST_NAME}/"
+# Use simplified Makefile for distribution (without dev commands)
+cp "${PROJECT_ROOT}/Makefile.dist" "${DIST_DIR}/${DIST_NAME}/Makefile"
 cp "${PROJECT_ROOT}/VERSION" "${DIST_DIR}/${DIST_NAME}/"
 cp "${PROJECT_ROOT}/README.md" "${DIST_DIR}/${DIST_NAME}/"
 cp "${PROJECT_ROOT}/install.sh" "${DIST_DIR}/${DIST_NAME}/"

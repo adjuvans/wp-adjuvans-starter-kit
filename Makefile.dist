@@ -1,0 +1,512 @@
+# ============================================================================
+# WPASK - WP Adjuvans Starter Kit
+# Makefile for end-users
+# ============================================================================
+#
+# Quick start:
+#   make check      # Verify system requirements
+#   make init       # Download WP-CLI and prepare environment
+#   make install    # Interactive WordPress installation wizard
+#
+# Get help:
+#   make help       # Show all available commands
+#   make status     # Check current installation status
+#
+# ============================================================================
+
+.PHONY: help check init install install-wordpress install-phpwpinfo \
+        adopt multisite-install multisite-convert multisite-status \
+        install-plugins install-themes install-plugin install-theme \
+        activate-theme list-plugins list-themes \
+        backup restore list-backups security-scan setup-wpscan \
+        status version diagnose-php config-check \
+        update-wp update-plugins update-themes update-all \
+        update check-update
+
+.DEFAULT_GOAL := help
+
+# Colors for output
+BLUE := \033[0;34m
+GREEN := \033[0;32m
+YELLOW := \033[0;33m
+RED := \033[0;31m
+CYAN := \033[0;36m
+BOLD := \033[1m
+NC := \033[0m
+
+# ============================================================================
+##@ Getting Started
+# ============================================================================
+
+help: ## Show this help message with all available commands
+	@echo ""
+	@echo "$(BOLD)$(BLUE)╔══════════════════════════════════════════════════════════════╗$(NC)"
+	@echo "$(BOLD)$(BLUE)║     WPASK - WP Adjuvans Starter Kit                          ║$(NC)"
+	@echo "$(BOLD)$(BLUE)╚══════════════════════════════════════════════════════════════╝$(NC)"
+	@echo ""
+	@echo "$(BOLD)Quick Start:$(NC)"
+	@echo "  $(GREEN)make check$(NC)   → Verify PHP, MySQL, and other requirements"
+	@echo "  $(GREEN)make init$(NC)    → Download WP-CLI and create directories"
+	@echo "  $(GREEN)make install$(NC) → Launch interactive WordPress installer"
+	@echo ""
+	@awk 'BEGIN {FS = ":.*##"; printf "$(BOLD)All Commands:$(NC)\n  make $(GREEN)<command>$(NC)\n\n"} \
+		/^[a-zA-Z_0-9-]+:.*?##/ { printf "  $(GREEN)%-18s$(NC) %s\n", $$1, $$2 } \
+		/^##@/ { printf "\n$(BOLD)$(BLUE)%s$(NC)\n", substr($$0, 5) }' $(MAKEFILE_LIST)
+	@echo ""
+	@echo "$(BOLD)Examples:$(NC)"
+	@echo "  $(CYAN)make install-plugin PLUGIN=elementor$(NC)"
+	@echo "      Install and activate the Elementor page builder"
+	@echo ""
+	@echo "  $(CYAN)make install-theme THEME=flavor$(NC)"
+	@echo "      Install the flavor theme from WordPress.org"
+	@echo ""
+	@echo "  $(CYAN)make backup$(NC)"
+	@echo "      Create encrypted backup of WordPress + database"
+	@echo ""
+	@echo "  $(CYAN)make update-all$(NC)"
+	@echo "      Update WordPress core, all plugins, and all themes"
+	@echo ""
+
+# ============================================================================
+##@ Installation & Setup
+# ============================================================================
+
+check: ## Verify system requirements (PHP, MySQL, curl, etc.)
+	@echo "$(BLUE)Checking system dependencies...$(NC)"
+	@echo ""
+	@echo "This checks for:"
+	@echo "  - PHP 7.4+ with required extensions"
+	@echo "  - MySQL/MariaDB client"
+	@echo "  - curl or wget for downloads"
+	@echo "  - tar, gzip for archives"
+	@echo ""
+	@./cli/check-dependencies.sh
+
+diagnose-php: ## Detailed PHP diagnostic (version, extensions, php.ini location)
+	@echo "$(BLUE)Running PHP diagnostic...$(NC)"
+	@echo ""
+	@echo "This shows:"
+	@echo "  - PHP version and binary path"
+	@echo "  - Loaded extensions"
+	@echo "  - php.ini location"
+	@echo "  - Memory limit, upload limits"
+	@echo ""
+	@./cli/diagnose-php.sh
+
+init: check ## Initialize environment: download WP-CLI, create directories
+	@echo "$(BLUE)Initializing WPASK environment...$(NC)"
+	@echo ""
+	@echo "This will:"
+	@echo "  - Download WP-CLI (command-line WordPress manager)"
+	@echo "  - Create config/, logs/, save/ directories"
+	@echo "  - Set proper file permissions"
+	@echo ""
+	@./cli/init.sh
+
+install: ## Launch interactive WordPress installation wizard
+	@echo "$(BLUE)Starting interactive WordPress installer...$(NC)"
+	@echo ""
+	@echo "The wizard will guide you through:"
+	@echo "  1. Database configuration (host, name, user, password)"
+	@echo "  2. Site settings (URL, title, admin credentials)"
+	@echo "  3. WordPress download and installation"
+	@echo "  4. Security hardening"
+	@echo ""
+	@./cli/install.sh
+
+install-wordpress: init ## Install WordPress using existing config/config.sh
+	@echo "$(BLUE)Installing WordPress from configuration...$(NC)"
+	@echo ""
+	@echo "Prerequisites:"
+	@echo "  - config/config.sh must exist (copy from config.sample.sh)"
+	@echo "  - Database must be created and accessible"
+	@echo ""
+	@./cli/install-wordpress.sh
+
+install-phpwpinfo: ## Install phpwpinfo.php diagnostic page
+	@echo "$(BLUE)Installing phpwpinfo diagnostic tool...$(NC)"
+	@echo ""
+	@echo "This installs a diagnostic page at:"
+	@echo "  https://your-site.com/phpwpinfo.php"
+	@echo ""
+	@echo "$(YELLOW)Warning: Remove after use for security!$(NC)"
+	@echo ""
+	@./cli/install-phpwpinfo.sh
+
+adopt: ## Adopt an existing WordPress site into WPASK management
+	@echo "$(BLUE)Starting site adoption wizard...$(NC)"
+	@echo ""
+	@echo "Use this when you have:"
+	@echo "  - An existing WordPress already in wordpress/ directory"
+	@echo "  - A working wp-config.php"
+	@echo ""
+	@echo "This will:"
+	@echo "  - Detect existing configuration"
+	@echo "  - Create config/config.sh from wp-config.php"
+	@echo "  - Enable WPASK management features"
+	@echo ""
+	@./cli/adopt-site.sh
+
+# ============================================================================
+##@ Multisite
+# ============================================================================
+
+multisite-install: ## Convert fresh WordPress to Multisite network
+	@echo "$(BLUE)Starting Multisite installation...$(NC)"
+	@echo ""
+	@echo "$(YELLOW)Requirements:$(NC)"
+	@echo "  - Fresh WordPress installation (no content yet)"
+	@echo "  - Apache with mod_rewrite or Nginx"
+	@echo ""
+	@echo "This enables WordPress Multisite with subdirectories:"
+	@echo "  - Main site: example.com"
+	@echo "  - Sub-sites: example.com/site2/, example.com/site3/"
+	@echo ""
+	@./cli/install-multisite.sh
+
+multisite-convert: ## Convert existing site with content to Multisite
+	@echo "$(BLUE)Starting Multisite conversion...$(NC)"
+	@echo ""
+	@echo "$(YELLOW)Warning: Make a backup first!$(NC)"
+	@echo ""
+	@echo "Use this when you have an existing site with:"
+	@echo "  - Posts, pages, media"
+	@echo "  - Plugins and themes already configured"
+	@echo ""
+	@./cli/convert-to-multisite.sh
+
+multisite-status: ## Check Multisite network status and configuration
+	@./cli/multisite-status.sh
+
+# ============================================================================
+##@ Plugins & Themes
+# ============================================================================
+
+install-plugins: ## Interactive wizard to install recommended plugins
+	@echo "$(BLUE)Starting plugin installation wizard...$(NC)"
+	@echo ""
+	@echo "Choose from curated plugin categories:"
+	@echo "  - SEO (Yoast, Rank Math)"
+	@echo "  - Security (Wordfence, Sucuri)"
+	@echo "  - Performance (WP Rocket, LiteSpeed)"
+	@echo "  - Page builders (Elementor, Divi)"
+	@echo ""
+	@./cli/install-plugins.sh
+
+install-themes: ## Interactive wizard to install themes
+	@echo "$(BLUE)Starting theme installation wizard...$(NC)"
+	@./cli/install-themes.sh
+
+install-plugin: ## Install a single plugin by slug
+	@echo ""
+	@if [ -z "$(PLUGIN)" ]; then \
+		echo "$(BOLD)Usage:$(NC)"; \
+		echo "  make install-plugin PLUGIN=<slug>"; \
+		echo ""; \
+		echo "$(BOLD)Examples:$(NC)"; \
+		echo "  $(GREEN)make install-plugin PLUGIN=elementor$(NC)"; \
+		echo "      Install Elementor page builder"; \
+		echo ""; \
+		echo "  $(GREEN)make install-plugin PLUGIN=woocommerce$(NC)"; \
+		echo "      Install WooCommerce e-commerce"; \
+		echo ""; \
+		echo "  $(GREEN)make install-plugin PLUGIN=contact-form-7$(NC)"; \
+		echo "      Install Contact Form 7"; \
+		echo ""; \
+		echo "$(YELLOW)Find plugin slugs at: https://wordpress.org/plugins/$(NC)"; \
+		echo "The slug is the last part of the URL."; \
+		echo ""; \
+		exit 1; \
+	fi
+	@if [ -f wp-cli.phar ] && [ -d wordpress ]; then \
+		echo "$(BLUE)Installing plugin: $(PLUGIN)...$(NC)"; \
+		cd wordpress && php ../wp-cli.phar plugin install $(PLUGIN) --activate; \
+		echo ""; \
+		echo "$(GREEN)✓ Plugin '$(PLUGIN)' installed and activated$(NC)"; \
+	else \
+		echo "$(RED)WordPress not installed. Run 'make install' first.$(NC)"; \
+		exit 1; \
+	fi
+
+install-theme: ## Install a single theme by slug
+	@echo ""
+	@if [ -z "$(THEME)" ]; then \
+		echo "$(BOLD)Usage:$(NC)"; \
+		echo "  make install-theme THEME=<slug>"; \
+		echo ""; \
+		echo "$(BOLD)Examples:$(NC)"; \
+		echo "  $(GREEN)make install-theme THEME=flavor$(NC)"; \
+		echo "      Install flavor theme"; \
+		echo ""; \
+		echo "  $(GREEN)make install-theme THEME=flavor$(NC)"; \
+		echo "      Install flavor starter theme"; \
+		echo ""; \
+		echo "  $(GREEN)make install-theme THEME=flavor$(NC)"; \
+		echo "      Install flavor theme"; \
+		echo ""; \
+		echo "$(YELLOW)Find theme slugs at: https://wordpress.org/themes/$(NC)"; \
+		echo ""; \
+		exit 1; \
+	fi
+	@if [ -f wp-cli.phar ] && [ -d wordpress ]; then \
+		echo "$(BLUE)Installing theme: $(THEME)...$(NC)"; \
+		cd wordpress && php ../wp-cli.phar theme install $(THEME); \
+		echo ""; \
+		echo "$(GREEN)✓ Theme '$(THEME)' installed$(NC)"; \
+		echo "$(YELLOW)To activate: make activate-theme THEME=$(THEME)$(NC)"; \
+	else \
+		echo "$(RED)WordPress not installed. Run 'make install' first.$(NC)"; \
+		exit 1; \
+	fi
+
+activate-theme: ## Activate an installed theme
+	@if [ -z "$(THEME)" ]; then \
+		echo "$(BOLD)Usage:$(NC)"; \
+		echo "  make activate-theme THEME=<slug>"; \
+		echo ""; \
+		echo "$(BOLD)Example:$(NC)"; \
+		echo "  $(GREEN)make activate-theme THEME=flavor$(NC)"; \
+		echo ""; \
+		exit 1; \
+	fi
+	@if [ -f wp-cli.phar ] && [ -d wordpress ]; then \
+		echo "$(BLUE)Activating theme: $(THEME)...$(NC)"; \
+		cd wordpress && php ../wp-cli.phar theme activate $(THEME); \
+		echo "$(GREEN)✓ Theme '$(THEME)' is now active$(NC)"; \
+	else \
+		echo "$(RED)WordPress not installed$(NC)"; \
+		exit 1; \
+	fi
+
+list-plugins: ## List all installed plugins with status
+	@echo ""
+	@if [ -f wp-cli.phar ] && [ -d wordpress ]; then \
+		echo "$(BOLD)Installed Plugins:$(NC)"; \
+		echo ""; \
+		cd wordpress && php ../wp-cli.phar plugin list; \
+	else \
+		echo "$(RED)WordPress not installed$(NC)"; \
+	fi
+
+list-themes: ## List all installed themes with status
+	@echo ""
+	@if [ -f wp-cli.phar ] && [ -d wordpress ]; then \
+		echo "$(BOLD)Installed Themes:$(NC)"; \
+		echo ""; \
+		cd wordpress && php ../wp-cli.phar theme list; \
+	else \
+		echo "$(RED)WordPress not installed$(NC)"; \
+	fi
+
+# ============================================================================
+##@ Backup & Restore
+# ============================================================================
+
+backup: ## Create encrypted backup (WordPress files + database)
+	@echo "$(BLUE)Creating backup...$(NC)"
+	@echo ""
+	@echo "This creates:"
+	@echo "  - Full database dump (SQL)"
+	@echo "  - WordPress files (wp-content/)"
+	@echo "  - GPG encryption (if configured)"
+	@echo ""
+	@echo "Backups are stored in: save/"
+	@echo ""
+	@./cli/backup.sh
+
+restore: ## Restore from a backup (interactive selection)
+	@echo "$(BLUE)Starting restore wizard...$(NC)"
+	@echo ""
+	@echo "$(YELLOW)Warning: This will overwrite current installation!$(NC)"
+	@echo ""
+	@./cli/restore.sh
+
+list-backups: ## List all available backups with dates and sizes
+	@echo ""
+	@echo "$(BOLD)Available Backups:$(NC)"
+	@./cli/restore.sh --list
+
+# ============================================================================
+##@ Security
+# ============================================================================
+
+security-scan: ## Run comprehensive security scan
+	@echo "$(BLUE)Running security scan...$(NC)"
+	@echo ""
+	@echo "This checks:"
+	@echo "  - File permissions"
+	@echo "  - Outdated WordPress/plugins/themes"
+	@echo "  - Known vulnerabilities (with WPScan API)"
+	@echo "  - Suspicious files"
+	@echo "  - wp-config.php security"
+	@echo ""
+	@./cli/security-scan.sh
+
+setup-wpscan: ## Configure WPScan API key for vulnerability database
+	@echo "$(BLUE)WPScan API Configuration$(NC)"
+	@echo ""
+	@echo "Get a free API key at: https://wpscan.com/api"
+	@echo "Free tier: 25 requests/day (enough for daily scans)"
+	@echo ""
+	@./cli/setup-wpscan-api.sh
+
+# ============================================================================
+##@ Status & Information
+# ============================================================================
+
+status: ## Show complete installation status
+	@echo ""
+	@echo "$(BOLD)$(BLUE)╔══════════════════════════════════════╗$(NC)"
+	@echo "$(BOLD)$(BLUE)║     WPASK Installation Status        ║$(NC)"
+	@echo "$(BOLD)$(BLUE)╚══════════════════════════════════════╝$(NC)"
+	@echo ""
+	@echo "$(BOLD)Configuration:$(NC)"
+	@if [ -f config/config.sh ]; then \
+		echo "  $(GREEN)✓$(NC) config/config.sh exists"; \
+	else \
+		echo "  $(RED)✗$(NC) config/config.sh missing"; \
+		echo "    $(YELLOW)→ Run 'make install' to create it$(NC)"; \
+	fi
+	@echo ""
+	@echo "$(BOLD)WordPress:$(NC)"
+	@if [ -d wordpress ]; then \
+		echo "  $(GREEN)✓$(NC) WordPress directory exists"; \
+		if [ -f wordpress/wp-config.php ]; then \
+			echo "  $(GREEN)✓$(NC) wp-config.php configured"; \
+			if [ -f wp-cli.phar ]; then \
+				WP_VERSION=$$(cd wordpress && php ../wp-cli.phar core version 2>/dev/null || echo "unknown"); \
+				echo "  $(GREEN)✓$(NC) WordPress version: $$WP_VERSION"; \
+			fi; \
+		else \
+			echo "  $(YELLOW)!$(NC) wp-config.php missing"; \
+		fi; \
+	else \
+		echo "  $(RED)✗$(NC) WordPress not installed"; \
+		echo "    $(YELLOW)→ Run 'make install' to install$(NC)"; \
+	fi
+	@echo ""
+	@echo "$(BOLD)WP-CLI:$(NC)"
+	@if [ -f wp-cli.phar ]; then \
+		echo "  $(GREEN)✓$(NC) WP-CLI installed"; \
+		WPCLI_VERSION=$$(php wp-cli.phar --version 2>/dev/null | head -1 || echo "unknown"); \
+		echo "  $(GREEN)✓$(NC) $$WPCLI_VERSION"; \
+	else \
+		echo "  $(RED)✗$(NC) WP-CLI not installed"; \
+		echo "    $(YELLOW)→ Run 'make init' to install$(NC)"; \
+	fi
+	@echo ""
+	@echo "$(BOLD)Backups:$(NC)"
+	@backup_count=$$(find save/ -name "*.tar.gz*" -type f 2>/dev/null | wc -l | tr -d ' '); \
+	if [ $$backup_count -gt 0 ]; then \
+		echo "  $(GREEN)✓$(NC) $$backup_count backup(s) found"; \
+		latest=$$(ls -t save/*.tar.gz* 2>/dev/null | head -1); \
+		if [ -n "$$latest" ]; then \
+			echo "  $(CYAN)→$(NC) Latest: $$(basename $$latest)"; \
+		fi; \
+	else \
+		echo "  $(YELLOW)!$(NC) No backups found"; \
+		echo "    $(YELLOW)→ Run 'make backup' to create one$(NC)"; \
+	fi
+	@echo ""
+
+version: ## Show WordPress and WPASK versions
+	@echo ""
+	@echo "$(BOLD)WPASK Toolkit:$(NC)"
+	@if [ -f VERSION ]; then \
+		echo "  Version: $$(cat VERSION)"; \
+	else \
+		echo "  Version: unknown"; \
+	fi
+	@echo ""
+	@echo "$(BOLD)WordPress:$(NC)"
+	@if [ -f wp-cli.phar ] && [ -d wordpress ]; then \
+		WP_VERSION=$$(cd wordpress && php ../wp-cli.phar core version 2>/dev/null); \
+		echo "  Version: $$WP_VERSION"; \
+	else \
+		echo "  Not installed"; \
+	fi
+	@echo ""
+
+config-check: ## Validate config/config.sh syntax
+	@if [ -f config/config.sh ]; then \
+		echo "$(BLUE)Checking configuration syntax...$(NC)"; \
+		if sh -n config/config.sh 2>/dev/null; then \
+			echo "$(GREEN)✓ Configuration syntax OK$(NC)"; \
+		else \
+			echo "$(RED)✗ Syntax error in config/config.sh$(NC)"; \
+			sh -n config/config.sh; \
+		fi; \
+	else \
+		echo "$(YELLOW)Configuration file not found$(NC)"; \
+		echo "Run 'make install' to create one."; \
+	fi
+
+# ============================================================================
+##@ Updates
+# ============================================================================
+
+update-wp: ## Update WordPress core to latest version
+	@echo ""
+	@if [ -f wp-cli.phar ] && [ -d wordpress ]; then \
+		echo "$(BOLD)Updating WordPress Core$(NC)"; \
+		echo ""; \
+		CURRENT=$$(cd wordpress && php ../wp-cli.phar core version); \
+		echo "Current version: $$CURRENT"; \
+		echo ""; \
+		cd wordpress && php ../wp-cli.phar core update; \
+		echo ""; \
+		NEW=$$(cd wordpress && php ../wp-cli.phar core version); \
+		echo "$(GREEN)✓ WordPress updated to $$NEW$(NC)"; \
+	else \
+		echo "$(RED)WordPress not installed$(NC)"; \
+	fi
+
+update-plugins: ## Update all plugins to latest versions
+	@echo ""
+	@if [ -f wp-cli.phar ] && [ -d wordpress ]; then \
+		echo "$(BOLD)Updating All Plugins$(NC)"; \
+		echo ""; \
+		cd wordpress && php ../wp-cli.phar plugin update --all; \
+		echo ""; \
+		echo "$(GREEN)✓ All plugins updated$(NC)"; \
+	else \
+		echo "$(RED)WordPress not installed$(NC)"; \
+	fi
+
+update-themes: ## Update all themes to latest versions
+	@echo ""
+	@if [ -f wp-cli.phar ] && [ -d wordpress ]; then \
+		echo "$(BOLD)Updating All Themes$(NC)"; \
+		echo ""; \
+		cd wordpress && php ../wp-cli.phar theme update --all; \
+		echo ""; \
+		echo "$(GREEN)✓ All themes updated$(NC)"; \
+	else \
+		echo "$(RED)WordPress not installed$(NC)"; \
+	fi
+
+update-all: ## Update everything: WordPress + plugins + themes
+	@echo ""
+	@echo "$(BOLD)$(BLUE)╔══════════════════════════════════════╗$(NC)"
+	@echo "$(BOLD)$(BLUE)║     Updating Everything              ║$(NC)"
+	@echo "$(BOLD)$(BLUE)╚══════════════════════════════════════╝$(NC)"
+	@echo ""
+	@echo "$(YELLOW)Tip: Run 'make backup' before updating!$(NC)"
+	@echo ""
+	@$(MAKE) -s update-wp
+	@$(MAKE) -s update-plugins
+	@$(MAKE) -s update-themes
+	@echo ""
+	@echo "$(GREEN)$(BOLD)✓ All updates complete!$(NC)"
+	@echo ""
+
+# ============================================================================
+##@ WPASK Toolkit
+# ============================================================================
+
+update: ## Update WPASK toolkit to latest version
+	@echo "$(BLUE)Checking for WPASK updates...$(NC)"
+	@./cli/self-update.sh
+
+check-update: ## Check if WPASK update is available (without installing)
+	@./cli/self-update.sh --check
