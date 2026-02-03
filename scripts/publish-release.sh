@@ -71,13 +71,15 @@ ${YELLOW}ENVIRONMENT${NC}
     - FTP_PASS      FTP password
     - FTP_PATH      Remote path (e.g., /wpask/)
     - FTP_PORT      FTP port (default: 21)
+    - PUBLIC_URL    Public download URL (optional)
 
 ${YELLOW}EXAMPLE .env${NC}
-    FTP_HOST=repo.adjuvans.fr
+    FTP_HOST=ftp.example.com
     FTP_USER=wpask
     FTP_PASS=secret
     FTP_PATH=/wpask/
     FTP_PORT=21
+    PUBLIC_URL=https://repo.example.com/wpask
 EOF
             exit 0
             ;;
@@ -95,7 +97,8 @@ if [ ! -f "$ENV_FILE" ]; then
 fi
 
 # Source .env file (POSIX-compatible)
-while IFS='=' read -r key value; do
+# Note: "|| [ -n "$key" ]" handles files without trailing newline
+while IFS='=' read -r key value || [ -n "$key" ]; do
     # Skip comments and empty lines
     case "$key" in
         \#*|"") continue ;;
@@ -113,6 +116,11 @@ done < "$ENV_FILE"
 [ -z "${FTP_PATH:-}" ] && fatal "FTP_PATH not set in .env"
 
 FTP_PORT="${FTP_PORT:-21}"
+
+# Public URL for downloads (defaults to FTP_HOST if not set)
+PUBLIC_URL="${PUBLIC_URL:-https://${FTP_HOST}${FTP_PATH}}"
+# Remove trailing slash for clean URLs
+PUBLIC_URL="${PUBLIC_URL%/}"
 
 # Read version
 VERSION=$(cat "${PROJECT_ROOT}/VERSION" | tr -d '\n')
@@ -211,9 +219,9 @@ fi
 echo "${GREEN}${BOLD}════════════════════════════════════════════════════════════${NC}"
 echo ""
 echo "${YELLOW}Download URL:${NC}"
-echo "  https://${FTP_HOST}${FTP_PATH}wpask-${VERSION}.tar.gz"
+echo "  ${PUBLIC_URL}/wpask-${VERSION}.tar.gz"
 echo ""
 echo "${YELLOW}Latest version check:${NC}"
-echo "  https://${FTP_HOST}${FTP_PATH}latest.txt"
-echo "  https://${FTP_HOST}${FTP_PATH}version.json"
+echo "  ${PUBLIC_URL}/latest.txt"
+echo "  ${PUBLIC_URL}/version.json"
 echo ""
