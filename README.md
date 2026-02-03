@@ -116,7 +116,20 @@ This toolkit provides:
 
 ## 🚀 Quick Start
 
-### 1. Clone the Repository
+### Option A: One-liner Install (Recommended)
+
+```bash
+# Install to current directory
+curl -fsSL https://raw.githubusercontent.com/adjuvans/wp-adjuvans-starter-kit/main/install.sh | sh
+
+# Or install to a specific directory
+curl -fsSL https://raw.githubusercontent.com/adjuvans/wp-adjuvans-starter-kit/main/install.sh | sh -s -- --dir /var/www/mysite
+
+# Install a specific version
+curl -fsSL https://raw.githubusercontent.com/adjuvans/wp-adjuvans-starter-kit/main/install.sh | sh -s -- --version v2.2.0
+```
+
+### Option B: Git Clone
 
 ```bash
 git clone https://github.com/adjuvans/wp-adjuvans-starter-kit.git
@@ -126,14 +139,15 @@ cd wp-adjuvans-starter-kit
 ### 2. Check Dependencies
 
 ```bash
-chmod +x cli/*.sh cli/lib/*.sh
-./cli/check-dependencies.sh
+make check
+# Or: ./cli/check-dependencies.sh
 ```
 
 ### 3. Run Interactive Installer
 
 ```bash
-./cli/install.sh
+make install
+# Or: ./cli/install.sh
 ```
 
 This wizard will:

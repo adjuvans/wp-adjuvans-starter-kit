@@ -29,6 +29,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Check wp-config.php multisite constants (`fix-config`)
   - JSON output for automation (`--json`)
 - `make multisite-status` - Check multisite configuration
+- `install.sh` - Remote installer script
+  - One-liner installation: `curl -fsSL .../install.sh | sh`
+  - Version selection (`--version v2.2.0`)
+  - Branch installation (`--branch dev`)
+  - Custom directory (`--dir /var/www/mysite`)
+  - Automatic latest version detection via GitHub API
+  - Overwrite protection for existing installations
 - `make multisite-install` - Convert WordPress to Multisite
 - `cli/convert-to-multisite.sh` - Convert existing site with content
   - Analyzes existing content (posts, pages, users, media)

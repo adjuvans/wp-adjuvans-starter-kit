@@ -75,6 +75,28 @@ jobs:
         with:
           name: Release ${{ github.ref_name }}
           body: |
+            ## Installation
+
+            ### Quick Install (recommended)
+            ```bash
+            curl -fsSL https://raw.githubusercontent.com/${{ github.repository }}/main/install.sh | sh
+            ```
+
+            ### Install specific version
+            ```bash
+            curl -fsSL https://raw.githubusercontent.com/${{ github.repository }}/main/install.sh | sh -s -- --version ${{ github.ref_name }}
+            ```
+
+            ### Manual download
+            Download `wp-adjuvans-starter-kit-*.tar.gz` below and extract:
+            ```bash
+            tar -xzf wp-adjuvans-starter-kit-*.tar.gz
+            cd wp-adjuvans-starter-kit-*
+            make check && make install
+            ```
+
+            ---
+
             ## What's Changed
 
             ${{ steps.changelog.outputs.CHANGELOG }}
