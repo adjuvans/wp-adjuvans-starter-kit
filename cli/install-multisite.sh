@@ -205,7 +205,9 @@ define( 'WP_ALLOW_MULTISITE', true );
     { print }
     ' "$wp_config" > "$temp_file"
 
-    mv "$temp_file" "$wp_config"
+    # Make wp-config.php writable before replacing (it may have 0400 permissions)
+    chmod u+w "$wp_config" 2>/dev/null || true
+    mv -f "$temp_file" "$wp_config"
     chmod 640 "$wp_config"
 
     log_success "Multisite constants added to wp-config.php"
@@ -243,6 +245,9 @@ define( 'BLOG_ID_CURRENT_SITE', 1 );
         return 0
     fi
 
+    # Make wp-config.php writable before modifying (it may have 0400 permissions)
+    chmod u+w "$wp_config" 2>/dev/null || true
+
     # Remove WP_ALLOW_MULTISITE (no longer needed after network install)
     sed -i.bak '/WP_ALLOW_MULTISITE/d' "$wp_config" 2>/dev/null || \
         sed -i '' '/WP_ALLOW_MULTISITE/d' "$wp_config"
@@ -271,7 +276,7 @@ define( 'BLOG_ID_CURRENT_SITE', 1 );
     { print }
     ' "$wp_config" > "$temp_file"
 
-    mv "$temp_file" "$wp_config"
+    mv -f "$temp_file" "$wp_config"
     chmod 640 "$wp_config"
 
     # Cleanup backup files
