@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.0] - 2026-02-03
+
 ### Added
 - `cli/install-multisite.sh` - WordPress Multisite installation
   - Interactive mode selection (subdomain or subdirectory)
@@ -152,7 +154,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/adjuvans/wp-adjuvans-starter-kit/compare/v2.1.0...HEAD
+[Unreleased]: https://github.com/adjuvans/wp-adjuvans-starter-kit/compare/v3.0.0...HEAD
+[3.0.0]: https://github.com/adjuvans/wp-adjuvans-starter-kit/compare/v2.1.0...v3.0.0
 [2.1.0]: https://github.com/adjuvans/wp-adjuvans-starter-kit/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/adjuvans/wp-adjuvans-starter-kit/compare/v1.0.0...v2.0.0
 [1.0.0]: https://github.com/adjuvans/wp-adjuvans-starter-kit/releases/tag/v1.0.0
