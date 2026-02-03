@@ -1,19 +1,19 @@
 #!/bin/sh
 # Publish WPASK release to repo.adjuvans.fr
 #
-# Builds distribution and uploads to SFTP server.
-# Requires .env file with SFTP credentials.
+# Builds distribution and uploads to FTP/FTPS server.
+# Requires .env file with FTP credentials.
 #
 # Usage:
 #   ./scripts/publish-release.sh
 #   ./scripts/publish-release.sh --dry-run
 #
 # Environment variables (from .env):
-#   SFTP_HOST     - SFTP server hostname
-#   SFTP_USER     - SFTP username
-#   SFTP_PASS     - SFTP password (optional if using SSH key)
-#   SFTP_PATH     - Remote path for uploads (e.g., /wpask/)
-#   SFTP_PORT     - SFTP port (default: 22)
+#   FTP_HOST      - FTP server hostname
+#   FTP_USER      - FTP username
+#   FTP_PASS      - FTP password
+#   FTP_PATH      - Remote path for uploads (e.g., /wpask/)
+#   FTP_PORT      - FTP port (default: 21)
 
 set -eu
 
@@ -66,18 +66,18 @@ ${YELLOW}OPTIONS${NC}
 
 ${YELLOW}ENVIRONMENT${NC}
     Requires .env file in project root with:
-    - SFTP_HOST     SFTP server hostname
-    - SFTP_USER     SFTP username
-    - SFTP_PASS     SFTP password (optional if using SSH key)
-    - SFTP_PATH     Remote path (e.g., /wpask/)
-    - SFTP_PORT     SFTP port (default: 22)
+    - FTP_HOST      FTP server hostname
+    - FTP_USER      FTP username
+    - FTP_PASS      FTP password
+    - FTP_PATH      Remote path (e.g., /wpask/)
+    - FTP_PORT      FTP port (default: 21)
 
 ${YELLOW}EXAMPLE .env${NC}
-    SFTP_HOST=repo.adjuvans.fr
-    SFTP_USER=wpask
-    SFTP_PASS=secret
-    SFTP_PATH=/wpask/
-    SFTP_PORT=22
+    FTP_HOST=repo.adjuvans.fr
+    FTP_USER=wpask
+    FTP_PASS=secret
+    FTP_PATH=/wpask/
+    FTP_PORT=21
 EOF
             exit 0
             ;;
@@ -107,11 +107,12 @@ while IFS='=' read -r key value; do
 done < "$ENV_FILE"
 
 # Validate required variables
-[ -z "${SFTP_HOST:-}" ] && fatal "SFTP_HOST not set in .env"
-[ -z "${SFTP_USER:-}" ] && fatal "SFTP_USER not set in .env"
-[ -z "${SFTP_PATH:-}" ] && fatal "SFTP_PATH not set in .env"
+[ -z "${FTP_HOST:-}" ] && fatal "FTP_HOST not set in .env"
+[ -z "${FTP_USER:-}" ] && fatal "FTP_USER not set in .env"
+[ -z "${FTP_PASS:-}" ] && fatal "FTP_PASS not set in .env"
+[ -z "${FTP_PATH:-}" ] && fatal "FTP_PATH not set in .env"
 
-SFTP_PORT="${SFTP_PORT:-22}"
+FTP_PORT="${FTP_PORT:-21}"
 
 # Read version
 VERSION=$(cat "${PROJECT_ROOT}/VERSION" | tr -d '\n')
@@ -157,33 +158,13 @@ else
     info "[DRY-RUN] Would create latest.txt and version.json"
 fi
 
-# Step 3: Upload via SFTP
-info "Uploading to ${SFTP_HOST}:${SFTP_PATH}..."
+# Step 3: Upload via FTP (with TLS)
+info "Uploading to ${FTP_HOST}:${FTP_PATH}..."
 
-# Check for required tools
-if command -v sshpass >/dev/null 2>&1; then
-    HAS_SSHPASS="true"
-else
-    HAS_SSHPASS="false"
+# Check for lftp (required for FTP/FTPS)
+if ! command -v lftp >/dev/null 2>&1; then
+    fatal "lftp is required for FTP uploads. Install with: brew install lftp (macOS) or apt install lftp (Linux)"
 fi
-
-if command -v sftp >/dev/null 2>&1; then
-    HAS_SFTP="true"
-elif command -v lftp >/dev/null 2>&1; then
-    HAS_LFTP="true"
-else
-    fatal "Neither sftp nor lftp found. Please install one of them."
-fi
-
-# Build SFTP commands
-SFTP_COMMANDS=$(cat <<EOF
-cd ${SFTP_PATH}
-put ${DIST_FILE}
-put ${MANIFEST_FILE}
-put ${VERSION_JSON}
-bye
-EOF
-)
 
 if [ "$DRY_RUN" = "true" ]; then
     echo ""
@@ -192,37 +173,29 @@ if [ "$DRY_RUN" = "true" ]; then
     echo "  - latest.txt"
     echo "  - version.json"
     echo ""
-    echo "${YELLOW}To: ${SFTP_HOST}:${SFTP_PATH}${NC}"
+    echo "${YELLOW}To: ftp://${FTP_HOST}:${FTP_PORT}${FTP_PATH}${NC}"
     echo ""
 else
-    # Use lftp if available (better for scripting with passwords)
-    if [ "${HAS_LFTP:-false}" = "true" ]; then
-        if [ -n "${SFTP_PASS:-}" ]; then
-            lftp -u "${SFTP_USER},${SFTP_PASS}" -p "${SFTP_PORT}" "sftp://${SFTP_HOST}" <<EOF
-cd ${SFTP_PATH}
+    info "Using lftp..."
+
+    # Upload using lftp
+    # Note: Use ftp:// with ssl-force for explicit TLS (AUTH TLS)
+    lftp -u "${FTP_USER},${FTP_PASS}" "ftp://${FTP_HOST}:${FTP_PORT}" <<LFTP_EOF
+set ssl:verify-certificate no
+set ftp:ssl-force true
+set ftp:ssl-protect-data true
+set ftp:ssl-allow true
+set ftp:passive-mode true
+set net:timeout 10
+set net:max-retries 2
+set net:reconnect-interval-base 5
+debug 3
+cd ${FTP_PATH}
 put ${DIST_FILE}
 put ${MANIFEST_FILE}
 put ${VERSION_JSON}
 bye
-EOF
-        else
-            lftp -u "${SFTP_USER}," -p "${SFTP_PORT}" "sftp://${SFTP_HOST}" <<EOF
-cd ${SFTP_PATH}
-put ${DIST_FILE}
-put ${MANIFEST_FILE}
-put ${VERSION_JSON}
-bye
-EOF
-        fi
-    else
-        # Use sftp with sshpass if password provided
-        if [ -n "${SFTP_PASS:-}" ] && [ "$HAS_SSHPASS" = "true" ]; then
-            echo "$SFTP_COMMANDS" | sshpass -p "${SFTP_PASS}" sftp -oPort="${SFTP_PORT}" -oBatchMode=no "${SFTP_USER}@${SFTP_HOST}"
-        else
-            # Rely on SSH key authentication
-            echo "$SFTP_COMMANDS" | sftp -oPort="${SFTP_PORT}" "${SFTP_USER}@${SFTP_HOST}"
-        fi
-    fi
+LFTP_EOF
 
     success "Upload complete"
 fi
@@ -238,9 +211,9 @@ fi
 echo "${GREEN}${BOLD}════════════════════════════════════════════════════════════${NC}"
 echo ""
 echo "${YELLOW}Download URL:${NC}"
-echo "  https://${SFTP_HOST}${SFTP_PATH}wpask-${VERSION}.tar.gz"
+echo "  https://${FTP_HOST}${FTP_PATH}wpask-${VERSION}.tar.gz"
 echo ""
 echo "${YELLOW}Latest version check:${NC}"
-echo "  https://${SFTP_HOST}${SFTP_PATH}latest.txt"
-echo "  https://${SFTP_HOST}${SFTP_PATH}version.json"
+echo "  https://${FTP_HOST}${FTP_PATH}latest.txt"
+echo "  https://${FTP_HOST}${FTP_PATH}version.json"
 echo ""
