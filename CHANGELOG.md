@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.1.0] - 2026-02-03
+
+### Added
+- `Makefile.dist` - Simplified Makefile for distribution
+  - Detailed command descriptions with usage context
+  - Quick Start section in help output
+  - Practical examples in help footer
+  - Contextual help when commands are run without arguments
+  - Excludes development-only commands (test, lint, dist, publish, etc.)
+
+### Changed
+- `scripts/build-dist.sh` - Now uses Makefile.dist instead of full Makefile
+  - Distribution package contains only user-relevant commands
+  - Cleaner help output for end-users
+
 ## [3.0.0] - 2026-02-03
 
 ### Added
