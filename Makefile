@@ -1,6 +1,7 @@
 .PHONY: help check init install install-phpwpinfo backup restore list-backups clean test diagnose-php \
        install-plugins install-themes list-plugins list-themes install-plugin install-theme activate-theme \
-       git-setup toolkit-version release-check security-scan setup-wpscan adopt multisite-install multisite-convert
+       git-setup toolkit-version release-check security-scan setup-wpscan adopt multisite-install multisite-convert \
+       multisite-status
 
 # Default target
 .DEFAULT_GOAL := help
@@ -56,6 +57,9 @@ multisite-install: ## Convert WordPress to Multisite network
 multisite-convert: ## Convert existing site with content to Multisite
 	@echo "$(BLUE)Starting multisite conversion...$(NC)"
 	@./cli/convert-to-multisite.sh
+
+multisite-status: ## Check multisite status and configuration
+	@./cli/multisite-status.sh
 
 ##@ Plugins & Themes
 

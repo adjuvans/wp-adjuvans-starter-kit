@@ -20,6 +20,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - SSO/shared cookies option (`--share-cookies`)
   - Cross-domain SSO warning with WP Remote Users Sync plugin suggestion
   - Automatic plugin installation for cross-domain user sync
+- `cli/multisite-status.sh` - Multisite diagnostics and management
+  - Show network configuration and statistics
+  - List all sites in network
+  - List network-activated plugins
+  - Install WP Remote Users Sync plugin on demand
+  - Regenerate .htaccess rules (`fix-htaccess`)
+  - Check wp-config.php multisite constants (`fix-config`)
+  - JSON output for automation (`--json`)
+- `make multisite-status` - Check multisite configuration
 - `make multisite-install` - Convert WordPress to Multisite
 - `cli/convert-to-multisite.sh` - Convert existing site with content
   - Analyzes existing content (posts, pages, users, media)
