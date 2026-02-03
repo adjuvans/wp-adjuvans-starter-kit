@@ -1,6 +1,6 @@
 .PHONY: help check init install install-phpwpinfo backup restore list-backups clean test diagnose-php \
        install-plugins install-themes list-plugins list-themes install-plugin install-theme activate-theme \
-       git-setup toolkit-version release-check security-scan setup-wpscan adopt multisite-install multisite-convert \
+       git-setup toolkit-version release-check dist security-scan setup-wpscan adopt multisite-install multisite-convert \
        multisite-status
 
 # Default target
@@ -333,3 +333,6 @@ release-check: ## Check if ready for release
 	@echo "  3. git commit -m 'chore: release vX.Y.Z'"
 	@echo "  4. git tag vX.Y.Z"
 	@echo "  5. git push origin vX.Y.Z"
+
+dist: ## Build distribution tarball (dist/wpask-<version>.tar.gz)
+	@./scripts/build-dist.sh
