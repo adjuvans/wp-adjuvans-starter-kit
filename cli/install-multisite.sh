@@ -169,9 +169,9 @@ add_multisite_constants() {
     if [ "$dry_run" = "false" ]; then
         backup_dir="${PROJECT_ROOT}/${directory_save:-save}"
         mkdir -p "$backup_dir"
-        backup_file="${backup_dir}/wp-config.pre-multisite.$(date +%Y%m%d-%H%M%S).bak"
-        cp "$wp_config" "$backup_file"
-        log_info "Backup created: ${backup_file}"
+        WP_CONFIG_BACKUP="${backup_dir}/wp-config.pre-multisite.$(date +%Y%m%d-%H%M%S).bak"
+        cp "$wp_config" "$WP_CONFIG_BACKUP"
+        log_info "Backup created: ${WP_CONFIG_BACKUP}"
     fi
 
     # Constants to add before "/* That's all, stop editing! */" or "require_once ABSPATH"
@@ -344,10 +344,13 @@ RewriteRule . index.php [L]
         return 0
     fi
 
-    # Backup existing .htaccess
+    # Backup existing .htaccess in save/ directory
     if [ -f "$htaccess_file" ]; then
-        cp "$htaccess_file" "${htaccess_file}.pre-multisite.bak"
-        log_info "Backup created: ${htaccess_file}.pre-multisite.bak"
+        backup_dir="${PROJECT_ROOT}/${directory_save:-save}"
+        mkdir -p "$backup_dir"
+        HTACCESS_BACKUP="${backup_dir}/htaccess.pre-multisite.$(date +%Y%m%d-%H%M%S).bak"
+        cp "$htaccess_file" "$HTACCESS_BACKUP"
+        log_info "Backup created: ${HTACCESS_BACKUP}"
     fi
 
     echo "$htaccess_rules" > "$htaccess_file"
@@ -667,16 +670,26 @@ else
         SUBDOMAIN_FLAG=""
     fi
 
+    # Get admin email from WordPress
+    ADMIN_EMAIL=$($PHP_BIN "${PROJECT_ROOT}/${file_wpcli_phar}" option get admin_email 2>/dev/null)
+    if [ -z "$ADMIN_EMAIL" ]; then
+        ADMIN_EMAIL="${admin_email:-admin@example.com}"
+    fi
+    log_info "Using admin email: ${ADMIN_EMAIL}"
+
     # shellcheck disable=SC2086
     if ! $PHP_BIN "${PROJECT_ROOT}/${file_wpcli_phar}" core multisite-install \
         --title="$NETWORK_TITLE" \
+        --admin_email="$ADMIN_EMAIL" \
         $SUBDOMAIN_FLAG \
         --skip-email 2>&1; then
         log_error "Network installation failed"
         log_info "Restoring wp-config.php backup..."
-        if [ -f "${WP_CONFIG}.pre-multisite.bak" ]; then
-            cp "${WP_CONFIG}.pre-multisite.bak" "$WP_CONFIG"
-            log_success "Backup restored"
+        if [ -n "$WP_CONFIG_BACKUP" ] && [ -f "$WP_CONFIG_BACKUP" ]; then
+            chmod u+w "$WP_CONFIG" 2>/dev/null || true
+            cp "$WP_CONFIG_BACKUP" "$WP_CONFIG"
+            chmod 640 "$WP_CONFIG"
+            log_success "Backup restored from: ${WP_CONFIG_BACKUP}"
         fi
         exit 1
     fi
@@ -732,8 +745,10 @@ else
     echo "  3. Install network-enabled themes and plugins"
     echo ""
     echo "${YELLOW}${BOLD}Backup Files${NORMAL}"
-    echo "  ${CYAN}•${NORMAL} wp-config.php backup: ${GREEN}${WP_CONFIG}.pre-multisite.bak${NORMAL}"
-    echo "  ${CYAN}•${NORMAL} .htaccess backup:     ${GREEN}${HTACCESS_FILE}.pre-multisite.bak${NORMAL}"
+    echo "  ${CYAN}•${NORMAL} wp-config.php backup: ${GREEN}${WP_CONFIG_BACKUP}${NORMAL}"
+    if [ -n "$HTACCESS_BACKUP" ]; then
+        echo "  ${CYAN}•${NORMAL} .htaccess backup:     ${GREEN}${HTACCESS_BACKUP}${NORMAL}"
+    fi
     echo ""
     echo "${YELLOW}Useful Commands${NORMAL}"
     echo "  ${GREEN}wp site list${NORMAL}              # List all sites"
