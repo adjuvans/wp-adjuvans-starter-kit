@@ -17,6 +17,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Automatic wp-config.php and .htaccess configuration
   - Pre-installation backups
   - Dry-run mode (`--dry-run`)
+  - SSO/shared cookies option (`--share-cookies`)
+  - Cross-domain SSO warning with WP Remote Users Sync plugin suggestion
+  - Automatic plugin installation for cross-domain user sync
 - `make multisite-install` - Convert WordPress to Multisite
 - `cli/convert-to-multisite.sh` - Convert existing site with content
   - Analyzes existing content (posts, pages, users, media)

@@ -46,8 +46,17 @@ ${YELLOW}OPTIONS${NORMAL}
     -t, --title TITLE       Network title (default: site title)
     -n, --dry-run           Show what would be done without making changes
     --skip-checks           Skip compatibility checks (not recommended)
-    --share-cookies         Enable shared login (SSO) across all sites
+    --share-cookies         Enable shared login (SSO) across subdomains
     --no-share-cookies      Disable shared login
+
+${YELLOW}SSO / SHARED COOKIES${NORMAL}
+    Native SSO (--share-cookies) ONLY works for sites on the SAME domain:
+      ✓ Works: site1.example.com, site2.example.com
+      ✗ Does NOT work: example.com + anotherdomain.com
+
+    For different domains, the installer will offer to install:
+      WP Remote Users Sync (https://wordpress.org/plugins/wp-remote-users-sync/)
+    This plugin synchronizes users across separate WordPress installations.
 
 ${YELLOW}MULTISITE MODES${NORMAL}
     ${GREEN}subdirectory${NORMAL} (Recommended for shared hosting)
@@ -639,6 +648,8 @@ log_info "Domain: ${DOMAIN}"
 log_separator
 
 # Shared cookies option
+INSTALL_REMOTE_USERS_SYNC="false"
+
 if [ -z "$SHARE_COOKIES" ]; then
     log_section "SHARED LOGIN (SSO)"
     echo ""
@@ -650,6 +661,10 @@ if [ -z "$SHARE_COOKIES" ]; then
     echo "  ${GREEN}Yes${NORMAL} - Users log in once for all sites"
     echo "  ${YELLOW}No${NORMAL}  - Users must log in separately to each site"
     echo ""
+    echo "${RED}${BOLD}Important:${NORMAL} Native SSO only works for sites on the ${BOLD}same domain${NORMAL}."
+    echo "  ${GREEN}✓${NORMAL} Works: site1.${DOMAIN}, site2.${DOMAIN}"
+    echo "  ${RED}✗${NORMAL} Does NOT work: ${DOMAIN} + otherdomain.com"
+    echo ""
     printf "${YELLOW}Enable shared cookies/SSO? (Y/n): ${NORMAL}"
     read -r share_cookies_choice
 
@@ -657,11 +672,52 @@ if [ -z "$SHARE_COOKIES" ]; then
         SHARE_COOKIES="false"
     else
         SHARE_COOKIES="true"
+
+        # Ask about different domains
+        echo ""
+        echo "${YELLOW}${BOLD}Domain Configuration${NORMAL}"
+        echo ""
+        echo "Will your network include sites on ${BOLD}different domains${NORMAL}?"
+        echo "(e.g., example.com AND otherbrand.com)"
+        echo ""
+        printf "${YELLOW}Will you use different domains? (y/N): ${NORMAL}"
+        read -r different_domains_choice
+
+        if [ "$different_domains_choice" = "y" ] || [ "$different_domains_choice" = "Y" ]; then
+            echo ""
+            log_warn "Native SSO will NOT work across different domains!"
+            echo ""
+            echo "For cross-domain user synchronization, you need a plugin like:"
+            echo "  ${CYAN}WP Remote Users Sync${NORMAL}"
+            echo "  ${GREEN}https://wordpress.org/plugins/wp-remote-users-sync/${NORMAL}"
+            echo ""
+            echo "This plugin allows:"
+            echo "  ${CYAN}•${NORMAL} Synchronize users across separate WordPress installations"
+            echo "  ${CYAN}•${NORMAL} Keep user roles and metadata in sync"
+            echo "  ${CYAN}•${NORMAL} Works with any domain configuration"
+            echo ""
+            printf "${YELLOW}Install WP Remote Users Sync plugin? (Y/n): ${NORMAL}"
+            read -r install_plugin_choice
+
+            if [ "$install_plugin_choice" != "n" ] && [ "$install_plugin_choice" != "N" ]; then
+                INSTALL_REMOTE_USERS_SYNC="true"
+                log_success "WP Remote Users Sync will be installed after network setup"
+            else
+                log_info "Plugin not selected. You can install it manually later."
+            fi
+
+            # Disable cookie sharing since it won't help with different domains
+            echo ""
+            log_info "Disabling native cookie sharing (not useful for different domains)"
+            SHARE_COOKIES="false"
+        fi
     fi
 fi
 
 if [ "$SHARE_COOKIES" = "true" ]; then
-    log_success "Shared cookies enabled (SSO)"
+    log_success "Shared cookies enabled (SSO for subdomains of ${DOMAIN})"
+elif [ "$INSTALL_REMOTE_USERS_SYNC" = "true" ]; then
+    log_info "SSO will be handled by WP Remote Users Sync plugin"
 else
     log_info "Shared cookies disabled"
 fi
@@ -775,6 +831,31 @@ generate_htaccess "$HTACCESS_FILE" "$MULTISITE_MODE" "$DRY_RUN"
 
 log_separator
 
+# Step 5: Install WP Remote Users Sync plugin (if requested)
+if [ "$INSTALL_REMOTE_USERS_SYNC" = "true" ]; then
+    log_section "STEP 5/5: INSTALLING WP REMOTE USERS SYNC"
+
+    if [ "$DRY_RUN" = "true" ]; then
+        log_info "[DRY-RUN] Would install plugin: wp-remote-users-sync"
+    else
+        log_info "Installing WP Remote Users Sync plugin..."
+
+        if $PHP_BIN "${PROJECT_ROOT}/${file_wpcli_phar}" plugin install wp-remote-users-sync --activate-network 2>&1; then
+            log_success "WP Remote Users Sync installed and network-activated"
+        else
+            log_warn "Could not install plugin automatically"
+            echo ""
+            echo "Please install manually from:"
+            echo "  ${GREEN}https://wordpress.org/plugins/wp-remote-users-sync/${NORMAL}"
+            echo ""
+            echo "Or via WP-CLI:"
+            echo "  ${GREEN}wp plugin install wp-remote-users-sync --activate-network${NORMAL}"
+        fi
+    fi
+
+    log_separator
+fi
+
 # Final summary
 if [ "$DRY_RUN" = "true" ]; then
     echo ""
@@ -806,10 +887,24 @@ else
         echo "  ${CYAN}•${NORMAL} Cookie domain: ${GREEN}.${DOMAIN}${NORMAL}"
         echo ""
     fi
+    if [ "$INSTALL_REMOTE_USERS_SYNC" = "true" ]; then
+        echo "${YELLOW}Cross-Domain User Sync: ${GREEN}Enabled${NORMAL}"
+        echo "  ${CYAN}•${NORMAL} WP Remote Users Sync plugin installed"
+        echo "  ${CYAN}•${NORMAL} Configure at: ${GREEN}${site_url}/wp-admin/network/settings.php?page=wprus${NORMAL}"
+        echo "  ${CYAN}•${NORMAL} Documentation: ${GREEN}https://github.com/froger-me/wp-remote-users-sync${NORMAL}"
+        echo ""
+    fi
     echo "${YELLOW}${BOLD}Next Steps${NORMAL}"
-    echo "  1. Visit the Network Admin dashboard"
-    echo "  2. Create your first subsite"
-    echo "  3. Install network-enabled themes and plugins"
+    if [ "$INSTALL_REMOTE_USERS_SYNC" = "true" ]; then
+        echo "  1. Visit the Network Admin dashboard"
+        echo "  2. ${BOLD}Configure WP Remote Users Sync${NORMAL} (Settings > WP Remote Users Sync)"
+        echo "  3. Create your first subsite"
+        echo "  4. Install the plugin on other WordPress sites to sync"
+    else
+        echo "  1. Visit the Network Admin dashboard"
+        echo "  2. Create your first subsite"
+        echo "  3. Install network-enabled themes and plugins"
+    fi
     echo ""
     echo "${YELLOW}${BOLD}Backup Files${NORMAL}"
     echo "  ${CYAN}•${NORMAL} wp-config.php backup: ${GREEN}${WP_CONFIG_BACKUP}${NORMAL}"
