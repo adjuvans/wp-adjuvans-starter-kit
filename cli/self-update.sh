@@ -16,7 +16,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
 # Update sources (in order of preference)
-PRIMARY_SOURCE="https://repo.adjuvans.fr/wpask"
+PRIMARY_SOURCE="https://ftp.decy8378.odns.fr/wpask"
 FALLBACK_SOURCE="https://github.com/adjuvans/wp-adjuvans-starter-kit"
 
 # Colors

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.1.1] - 2026-02-03
+
+### Fixed
+- Makefile.dist uses `sh ./cli/...` to avoid permission denied errors on shared hosting
+- `cli/self-update.sh` - Corrected primary download URL
+
 ## [3.1.0] - 2026-02-03
 
 ### Added

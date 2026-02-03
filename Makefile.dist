@@ -80,7 +80,7 @@ check: ## Verify system requirements (PHP, MySQL, curl, etc.)
 	@echo "  - curl or wget for downloads"
 	@echo "  - tar, gzip for archives"
 	@echo ""
-	@./cli/check-dependencies.sh
+	@sh ./cli/check-dependencies.sh
 
 diagnose-php: ## Detailed PHP diagnostic (version, extensions, php.ini location)
 	@echo "$(BLUE)Running PHP diagnostic...$(NC)"
@@ -91,7 +91,7 @@ diagnose-php: ## Detailed PHP diagnostic (version, extensions, php.ini location)
 	@echo "  - php.ini location"
 	@echo "  - Memory limit, upload limits"
 	@echo ""
-	@./cli/diagnose-php.sh
+	@sh ./cli/diagnose-php.sh
 
 init: check ## Initialize environment: download WP-CLI, create directories
 	@echo "$(BLUE)Initializing WPASK environment...$(NC)"
@@ -101,7 +101,7 @@ init: check ## Initialize environment: download WP-CLI, create directories
 	@echo "  - Create config/, logs/, save/ directories"
 	@echo "  - Set proper file permissions"
 	@echo ""
-	@./cli/init.sh
+	@sh ./cli/init.sh
 
 install: ## Launch interactive WordPress installation wizard
 	@echo "$(BLUE)Starting interactive WordPress installer...$(NC)"
@@ -112,7 +112,7 @@ install: ## Launch interactive WordPress installation wizard
 	@echo "  3. WordPress download and installation"
 	@echo "  4. Security hardening"
 	@echo ""
-	@./cli/install.sh
+	@sh ./cli/install.sh
 
 install-wordpress: init ## Install WordPress using existing config/config.sh
 	@echo "$(BLUE)Installing WordPress from configuration...$(NC)"
@@ -121,7 +121,7 @@ install-wordpress: init ## Install WordPress using existing config/config.sh
 	@echo "  - config/config.sh must exist (copy from config.sample.sh)"
 	@echo "  - Database must be created and accessible"
 	@echo ""
-	@./cli/install-wordpress.sh
+	@sh ./cli/install-wordpress.sh
 
 install-phpwpinfo: ## Install phpwpinfo.php diagnostic page
 	@echo "$(BLUE)Installing phpwpinfo diagnostic tool...$(NC)"
@@ -131,7 +131,7 @@ install-phpwpinfo: ## Install phpwpinfo.php diagnostic page
 	@echo ""
 	@echo "$(YELLOW)Warning: Remove after use for security!$(NC)"
 	@echo ""
-	@./cli/install-phpwpinfo.sh
+	@sh ./cli/install-phpwpinfo.sh
 
 adopt: ## Adopt an existing WordPress site into WPASK management
 	@echo "$(BLUE)Starting site adoption wizard...$(NC)"
@@ -145,7 +145,7 @@ adopt: ## Adopt an existing WordPress site into WPASK management
 	@echo "  - Create config/config.sh from wp-config.php"
 	@echo "  - Enable WPASK management features"
 	@echo ""
-	@./cli/adopt-site.sh
+	@sh ./cli/adopt-site.sh
 
 # ============================================================================
 ##@ Multisite
@@ -162,7 +162,7 @@ multisite-install: ## Convert fresh WordPress to Multisite network
 	@echo "  - Main site: example.com"
 	@echo "  - Sub-sites: example.com/site2/, example.com/site3/"
 	@echo ""
-	@./cli/install-multisite.sh
+	@sh ./cli/install-multisite.sh
 
 multisite-convert: ## Convert existing site with content to Multisite
 	@echo "$(BLUE)Starting Multisite conversion...$(NC)"
@@ -173,10 +173,10 @@ multisite-convert: ## Convert existing site with content to Multisite
 	@echo "  - Posts, pages, media"
 	@echo "  - Plugins and themes already configured"
 	@echo ""
-	@./cli/convert-to-multisite.sh
+	@sh ./cli/convert-to-multisite.sh
 
 multisite-status: ## Check Multisite network status and configuration
-	@./cli/multisite-status.sh
+	@sh ./cli/multisite-status.sh
 
 # ============================================================================
 ##@ Plugins & Themes
@@ -191,11 +191,11 @@ install-plugins: ## Interactive wizard to install recommended plugins
 	@echo "  - Performance (WP Rocket, LiteSpeed)"
 	@echo "  - Page builders (Elementor, Divi)"
 	@echo ""
-	@./cli/install-plugins.sh
+	@sh ./cli/install-plugins.sh
 
 install-themes: ## Interactive wizard to install themes
 	@echo "$(BLUE)Starting theme installation wizard...$(NC)"
-	@./cli/install-themes.sh
+	@sh ./cli/install-themes.sh
 
 install-plugin: ## Install a single plugin by slug
 	@echo ""
@@ -312,19 +312,19 @@ backup: ## Create encrypted backup (WordPress files + database)
 	@echo ""
 	@echo "Backups are stored in: save/"
 	@echo ""
-	@./cli/backup.sh
+	@sh ./cli/backup.sh
 
 restore: ## Restore from a backup (interactive selection)
 	@echo "$(BLUE)Starting restore wizard...$(NC)"
 	@echo ""
 	@echo "$(YELLOW)Warning: This will overwrite current installation!$(NC)"
 	@echo ""
-	@./cli/restore.sh
+	@sh ./cli/restore.sh
 
 list-backups: ## List all available backups with dates and sizes
 	@echo ""
 	@echo "$(BOLD)Available Backups:$(NC)"
-	@./cli/restore.sh --list
+	@sh ./cli/restore.sh --list
 
 # ============================================================================
 ##@ Security
@@ -340,7 +340,7 @@ security-scan: ## Run comprehensive security scan
 	@echo "  - Suspicious files"
 	@echo "  - wp-config.php security"
 	@echo ""
-	@./cli/security-scan.sh
+	@sh ./cli/security-scan.sh
 
 setup-wpscan: ## Configure WPScan API key for vulnerability database
 	@echo "$(BLUE)WPScan API Configuration$(NC)"
@@ -348,7 +348,7 @@ setup-wpscan: ## Configure WPScan API key for vulnerability database
 	@echo "Get a free API key at: https://wpscan.com/api"
 	@echo "Free tier: 25 requests/day (enough for daily scans)"
 	@echo ""
-	@./cli/setup-wpscan-api.sh
+	@sh ./cli/setup-wpscan-api.sh
 
 # ============================================================================
 ##@ Status & Information
@@ -506,7 +506,7 @@ update-all: ## Update everything: WordPress + plugins + themes
 
 update: ## Update WPASK toolkit to latest version
 	@echo "$(BLUE)Checking for WPASK updates...$(NC)"
-	@./cli/self-update.sh
+	@sh ./cli/self-update.sh
 
 check-update: ## Check if WPASK update is available (without installing)
-	@./cli/self-update.sh --check
+	@sh ./cli/self-update.sh --check
