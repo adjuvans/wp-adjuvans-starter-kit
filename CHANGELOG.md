@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.2.0] - 2026-02-04
+
+### Added
+- `cli/fix-permissions.sh` - Comprehensive permission fixing script for shared hosting
+  - Detects and removes setgid/setuid bits causing 403 errors
+  - Check-only mode (`--check`) for CI/CD validation
+  - Fix entire project (`--all`) or WordPress directory only
+  - Safe permissions: 755 (dirs), 644 (files), 640 (wp-config.php)
+  - Compatible with Infomaniak, OVH, o2switch shared hosting
+- `make fix-permissions` - Fix all permissions for shared hosting
+- `make check-permissions` - Check for dangerous permissions (setgid/setuid)
+
+### Fixed
+- **Critical**: Permission sanitization in build/deployment scripts
+  - Prevents 403 Forbidden errors on Apache/PHP-FPM shared hosting
+  - Removes inherited setgid bits from parent directories
+- `scripts/build-dist.sh` - Added permission sanitization before archive creation
+- `install.sh` - Added permission sanitization in post-install step
+- `.github/workflows/release.yml` - Added `--no-same-permissions` flag to tar
+
 ## [3.1.1] - 2026-02-03
 
 ### Fixed
@@ -175,7 +195,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/adjuvans/wp-adjuvans-starter-kit/compare/v3.0.0...HEAD
+[Unreleased]: https://github.com/adjuvans/wp-adjuvans-starter-kit/compare/v3.2.0...HEAD
+[3.2.0]: https://github.com/adjuvans/wp-adjuvans-starter-kit/compare/v3.1.1...v3.2.0
+[3.1.1]: https://github.com/adjuvans/wp-adjuvans-starter-kit/compare/v3.1.0...v3.1.1
+[3.1.0]: https://github.com/adjuvans/wp-adjuvans-starter-kit/compare/v3.0.0...v3.1.0
 [3.0.0]: https://github.com/adjuvans/wp-adjuvans-starter-kit/compare/v2.1.0...v3.0.0
 [2.1.0]: https://github.com/adjuvans/wp-adjuvans-starter-kit/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/adjuvans/wp-adjuvans-starter-kit/compare/v1.0.0...v2.0.0
