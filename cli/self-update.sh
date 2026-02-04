@@ -38,11 +38,11 @@ else
     NC=''
 fi
 
-# Logging functions
-info() { printf "${BLUE}[INFO]${NC} %s\n" "$1"; }
-success() { printf "${GREEN}[OK]${NC} %s\n" "$1"; }
-warn() { printf "${YELLOW}[WARN]${NC} %s\n" "$1"; }
-error() { printf "${RED}[ERROR]${NC} %s\n" "$1" >&2; }
+# Logging functions (use %b to interpret escape sequences)
+info() { printf "${BLUE}[INFO]${NC} %b\n" "$1"; }
+success() { printf "${GREEN}[OK]${NC} %b\n" "$1"; }
+warn() { printf "${YELLOW}[WARN]${NC} %b\n" "$1"; }
+error() { printf "${RED}[ERROR]${NC} %b\n" "$1" >&2; }
 fatal() { error "$1"; exit 1; }
 
 # Show help
@@ -279,7 +279,7 @@ main() {
     done
 
     echo ""
-    echo "${CYAN}${BOLD}WPASK Update Check${NC}"
+    printf "%b\n" "${CYAN}${BOLD}WPASK Update Check${NC}"
     echo ""
 
     check_download_tool
@@ -329,9 +329,9 @@ main() {
     if [ "$check_only" = "true" ]; then
         echo ""
         if [ "$UPDATE_AVAILABLE" = "true" ]; then
-            echo "${YELLOW}${BOLD}Update available: v${CURRENT_VERSION} → v${LATEST_VERSION}${NC}"
+            printf "%b\n" "${YELLOW}${BOLD}Update available: v${CURRENT_VERSION} → v${LATEST_VERSION}${NC}"
             echo ""
-            echo "Run ${GREEN}make update${NC} or ${GREEN}./cli/self-update.sh${NC} to update."
+            printf "%b\n" "Run ${GREEN}make update${NC} or ${GREEN}./cli/self-update.sh${NC} to update."
         else
             success "You are running the latest version!"
         fi
@@ -349,26 +349,26 @@ main() {
 
     echo ""
     if [ "$UPDATE_AVAILABLE" = "true" ]; then
-        echo "${YELLOW}${BOLD}Update available: v${CURRENT_VERSION} → v${LATEST_VERSION}${NC}"
+        printf "%b\n" "${YELLOW}${BOLD}Update available: v${CURRENT_VERSION} → v${LATEST_VERSION}${NC}"
     else
-        echo "${YELLOW}${BOLD}Reinstalling v${LATEST_VERSION}${NC}"
+        printf "%b\n" "${YELLOW}${BOLD}Reinstalling v${LATEST_VERSION}${NC}"
     fi
     echo ""
-    echo "${YELLOW}The following will be updated:${NC}"
+    printf "%b\n" "${YELLOW}The following will be updated:${NC}"
     echo "  - cli/ (CLI scripts)"
     echo "  - scripts/ (build scripts)"
     echo "  - Makefile"
     echo "  - VERSION"
     echo "  - README.md"
     echo ""
-    echo "${GREEN}The following will be preserved:${NC}"
+    printf "%b\n" "${GREEN}The following will be preserved:${NC}"
     echo "  - config/config.sh"
     echo "  - wordpress/"
     echo "  - save/"
     echo "  - logs/"
     echo "  - .env"
     echo ""
-    printf "${YELLOW}Proceed with update? (y/N): ${NC}"
+    printf "%b" "${YELLOW}Proceed with update? (y/N): ${NC}"
     read -r confirm
 
     if [ "$confirm" != "y" ] && [ "$confirm" != "Y" ]; then
@@ -380,11 +380,11 @@ main() {
     do_update "$LATEST_VERSION" "$UPDATE_SOURCE"
 
     echo ""
-    echo "${GREEN}${BOLD}════════════════════════════════════════════════════════════${NC}"
-    echo "${GREEN}${BOLD}  WPASK updated to v${LATEST_VERSION}!${NC}"
-    echo "${GREEN}${BOLD}════════════════════════════════════════════════════════════${NC}"
+    printf "%b\n" "${GREEN}${BOLD}════════════════════════════════════════════════════════════${NC}"
+    printf "%b\n" "${GREEN}${BOLD}  WPASK updated to v${LATEST_VERSION}!${NC}"
+    printf "%b\n" "${GREEN}${BOLD}════════════════════════════════════════════════════════════${NC}"
     echo ""
-    echo "${YELLOW}What's new:${NC}"
+    printf "%b\n" "${YELLOW}What's new:${NC}"
     echo "  See CHANGELOG.md for details"
     echo ""
 }

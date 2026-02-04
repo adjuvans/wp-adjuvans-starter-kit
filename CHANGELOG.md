@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `scripts/build-dist.sh` - Added permission sanitization before archive creation
 - `install.sh` - Added permission sanitization in post-install step
 - `.github/workflows/release.yml` - Added `--no-same-permissions` flag to tar
+- `cli/self-update.sh` - Fixed ANSI color codes not being interpreted in terminal output
 
 ## [3.1.1] - 2026-02-03
 
