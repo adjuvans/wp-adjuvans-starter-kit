@@ -21,18 +21,20 @@ set -eu
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
-# Colors
+# Colors (bright/pastel variants for better readability)
 if [ -t 1 ]; then
-    RED='\033[0;31m'
-    GREEN='\033[0;32m'
-    YELLOW='\033[0;33m'
-    CYAN='\033[0;36m'
+    RED='\033[0;91m'
+    GREEN='\033[0;92m'
+    YELLOW='\033[0;93m'
+    BLUE='\033[0;94m'
+    CYAN='\033[0;96m'
     BOLD='\033[1m'
     NC='\033[0m'
 else
     RED=''
     GREEN=''
     YELLOW=''
+    BLUE=''
     CYAN=''
     BOLD=''
     NC=''
@@ -128,32 +130,36 @@ info "Target: ${TARGET_DIR}"
 info "Mode: $([ "$CHECK_ONLY" = "true" ] && echo "Check only" || echo "Fix permissions")"
 echo ""
 
-# Count setgid/setuid files
+# Count setgid/setuid files and directories separately
 info "Scanning for setgid/setuid bits..."
 
 SETGID_DIRS=$(find "$TARGET_DIR" -type d -perm /6000 2>/dev/null | wc -l | tr -d ' ')
 SETGID_FILES=$(find "$TARGET_DIR" -type f -perm /6000 2>/dev/null | wc -l | tr -d ' ')
-TOTAL_ISSUES=$((SETGID_DIRS + SETGID_FILES))
 
-if [ "$TOTAL_ISSUES" -gt 0 ]; then
-    warn "Found ${TOTAL_ISSUES} items with setgid/setuid bits:"
-    echo ""
-    echo "  Directories with setgid: ${SETGID_DIRS}"
-    echo "  Files with setgid/setuid: ${SETGID_FILES}"
+# Only FILES with setgid/setuid are a real problem
+# Directories with setgid are common on shared hosting and usually harmless
+HAS_FILE_ISSUES="false"
+if [ "$SETGID_FILES" -gt 0 ]; then
+    HAS_FILE_ISSUES="true"
+fi
+
+if [ "$SETGID_DIRS" -gt 0 ] || [ "$SETGID_FILES" -gt 0 ]; then
+    if [ "$SETGID_FILES" -gt 0 ]; then
+        error "Found ${SETGID_FILES} FILES with setgid/setuid bits (CRITICAL):"
+    fi
+    if [ "$SETGID_DIRS" -gt 0 ]; then
+        info "Found ${SETGID_DIRS} directories with setgid bit"
+        echo "  ${YELLOW}Note: Directory setgid is common on shared hosting (Infomaniak, OVH)${NC}"
+        echo "  ${YELLOW}      and is usually harmless - it's set by the hosting provider.${NC}"
+    fi
     echo ""
 
-    if [ "$TOTAL_ISSUES" -le 20 ]; then
-        echo "${YELLOW}Affected items:${NC}"
-        find "$TARGET_DIR" -perm /6000 -ls 2>/dev/null | while read -r line; do
+    # Only show files if there are problematic files
+    if [ "$SETGID_FILES" -gt 0 ]; then
+        echo "${RED}Files with setgid/setuid (MUST FIX):${NC}"
+        find "$TARGET_DIR" -type f -perm /6000 -ls 2>/dev/null | head -20 | while read -r line; do
             echo "  $line"
         done
-        echo ""
-    else
-        echo "${YELLOW}First 20 affected items:${NC}"
-        find "$TARGET_DIR" -perm /6000 -ls 2>/dev/null | head -20 | while read -r line; do
-            echo "  $line"
-        done
-        echo "  ... and $((TOTAL_ISSUES - 20)) more"
         echo ""
     fi
 else
@@ -163,13 +169,17 @@ fi
 # Check-only mode: exit here
 if [ "$CHECK_ONLY" = "true" ]; then
     echo ""
-    if [ "$TOTAL_ISSUES" -gt 0 ]; then
-        error "Found ${TOTAL_ISSUES} permission issues"
+    if [ "$HAS_FILE_ISSUES" = "true" ]; then
+        error "Found ${SETGID_FILES} file permission issues that need fixing"
         echo ""
         echo "Run without --check to fix: ${GREEN}./cli/fix-permissions.sh${NC}"
         exit 1
     else
-        success "All permissions are correct"
+        if [ "$SETGID_DIRS" -gt 0 ]; then
+            success "No critical permission issues (directory setgid is normal on shared hosting)"
+        else
+            success "All permissions are correct"
+        fi
         exit 0
     fi
 fi
@@ -208,14 +218,17 @@ if [ -d "${PROJECT_ROOT}/config" ]; then
     find "${PROJECT_ROOT}/config" -type f -exec chmod 640 {} \; 2>/dev/null || true
 fi
 
-# Step 6: Verify no setgid/setuid remains
+# Step 6: Verify no setgid/setuid remains on FILES
 echo ""
 info "Verifying..."
-REMAINING=$(find "$TARGET_DIR" -perm /6000 2>/dev/null | wc -l | tr -d ' ')
+REMAINING_FILES=$(find "$TARGET_DIR" -type f -perm /6000 2>/dev/null | wc -l | tr -d ' ')
+REMAINING_DIRS=$(find "$TARGET_DIR" -type d -perm /6000 2>/dev/null | wc -l | tr -d ' ')
 
-if [ "$REMAINING" -gt 0 ]; then
-    warn "${REMAINING} items still have special bits (may require root access)"
-    find "$TARGET_DIR" -perm /6000 -ls 2>/dev/null | head -10
+if [ "$REMAINING_FILES" -gt 0 ]; then
+    error "${REMAINING_FILES} files still have setgid/setuid bits (may require root access)"
+    find "$TARGET_DIR" -type f -perm /6000 -ls 2>/dev/null | head -10
+elif [ "$REMAINING_DIRS" -gt 0 ]; then
+    info "${REMAINING_DIRS} directories still have setgid bit (normal on shared hosting)"
 else
     success "All setgid/setuid bits removed"
 fi
@@ -230,13 +243,19 @@ echo "  ${GREEN}Files:${NC}          644 (rw-r--r--)"
 echo "  ${GREEN}Scripts (.sh):${NC}  755 (rwxr-xr-x)"
 echo "  ${GREEN}wp-config.php:${NC}  640 (rw-r-----)"
 echo "  ${GREEN}config/*:${NC}       640 (rw-r-----)"
-echo "  ${GREEN}setgid/setuid:${NC}  REMOVED"
+if [ "$REMAINING_FILES" -eq 0 ]; then
+    echo "  ${GREEN}setgid/setuid:${NC}  REMOVED from files"
+fi
 echo ""
 
-if [ "$REMAINING" -eq 0 ]; then
+if [ "$REMAINING_FILES" -eq 0 ]; then
     success "Your site should now work on shared hosting (Infomaniak, OVH, etc.)"
+    if [ "$REMAINING_DIRS" -gt 0 ]; then
+        echo ""
+        info "Directory setgid bits are managed by your hosting provider and are harmless."
+    fi
 else
-    warn "Some items could not be fixed. Check permissions manually or contact hosting support."
+    error "Some file permissions could not be fixed. Contact hosting support."
 fi
 
 echo ""
