@@ -6,12 +6,14 @@
 # Default target
 .DEFAULT_GOAL := help
 
-# Colors for output
-BLUE := \033[0;34m
-GREEN := \033[0;32m
-YELLOW := \033[0;33m
-RED := \033[0;31m
-NC := \033[0m # No Color
+# Colors for output (bright/pastel variants for better readability)
+BLUE := \033[0;94m
+GREEN := \033[0;92m
+YELLOW := \033[0;93m
+RED := \033[0;91m
+CYAN := \033[0;96m
+BOLD := \033[1m
+NC := \033[0m
 
 ##@ General
 
