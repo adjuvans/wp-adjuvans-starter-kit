@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.3.0] - 2026-02-04
+
+### Added
+- `fix-permissions` and `check-permissions` commands in Makefile.dist (distribution)
+
+### Changed
+- Bright/pastel color scheme across all scripts for better terminal readability
+  - Updated: Makefile, Makefile.dist, fix-permissions.sh, self-update.sh, build-dist.sh
+- `scripts/build-dist.sh` now keeps extracted directory alongside archive in `dist/`
+  - Output: `dist/wpask-VERSION/` (directory) + `dist/wpask-VERSION.tar.gz` (archive)
+
+### Fixed
+- `cli/fix-permissions.sh` - Directory setgid no longer treated as error
+  - Setgid on directories is normal on shared hosting (Infomaniak, OVH, o2switch)
+  - Only setgid/setuid on FILES is flagged as critical
+  - `make check-permissions` now returns success if only directories have setgid
+
 ## [3.2.0] - 2026-02-04
 
 ### Added
@@ -197,7 +214,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/adjuvans/wp-adjuvans-starter-kit/compare/v3.2.0...HEAD
+[Unreleased]: https://github.com/adjuvans/wp-adjuvans-starter-kit/compare/v3.3.0...HEAD
+[3.3.0]: https://github.com/adjuvans/wp-adjuvans-starter-kit/compare/v3.2.0...v3.3.0
 [3.2.0]: https://github.com/adjuvans/wp-adjuvans-starter-kit/compare/v3.1.1...v3.2.0
 [3.1.1]: https://github.com/adjuvans/wp-adjuvans-starter-kit/compare/v3.1.0...v3.1.1
 [3.1.0]: https://github.com/adjuvans/wp-adjuvans-starter-kit/compare/v3.0.0...v3.1.0
