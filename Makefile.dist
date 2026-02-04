@@ -21,7 +21,7 @@
         backup restore list-backups security-scan setup-wpscan \
         status version diagnose-php config-check \
         update-wp update-plugins update-themes update-all \
-        update check-update
+        update check-update fix-permissions check-permissions
 
 .DEFAULT_GOAL := help
 
@@ -510,3 +510,9 @@ update: ## Update WPASK toolkit to latest version
 
 check-update: ## Check if WPASK update is available (without installing)
 	@sh ./cli/self-update.sh --check
+
+fix-permissions: ## Fix ALL permissions for shared hosting (removes setgid/setuid)
+	@sh ./cli/fix-permissions.sh
+
+check-permissions: ## Check for dangerous permissions (setgid/setuid)
+	@sh ./cli/fix-permissions.sh --check
