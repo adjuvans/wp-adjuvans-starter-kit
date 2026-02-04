@@ -1,8 +1,8 @@
 #!/bin/sh
 # Build distribution package for WP Adjuvans Starter Kit
 #
-# Creates a minimal tarball with only essential files for installation.
-# Output: dist/wpask-<version>.tar.gz
+# Creates a minimal distribution with only essential files for installation.
+# Output: dist/wpask-<version>/ (directory) and dist/wpask-<version>.tar.gz (archive)
 
 set -eu
 
@@ -92,9 +92,6 @@ info "Creating archive..."
 cd "${DIST_DIR}"
 COPYFILE_DISABLE=1 tar -czf "${ARCHIVE_NAME}" "${DIST_NAME}"
 
-# Cleanup extracted directory (keep only tarball)
-rm -rf "${DIST_DIR}/${DIST_NAME}"
-
 # Show result
 ARCHIVE_SIZE=$(ls -lh "${DIST_DIR}/${ARCHIVE_NAME}" | awk '{print $5}')
 ARCHIVE_PATH="${DIST_DIR}/${ARCHIVE_NAME}"
@@ -102,16 +99,14 @@ ARCHIVE_PATH="${DIST_DIR}/${ARCHIVE_NAME}"
 echo ""
 success "Distribution built successfully!"
 echo ""
-echo "${YELLOW}Archive:${NC} ${GREEN}${ARCHIVE_PATH}${NC}"
-echo "${YELLOW}Size:${NC}    ${GREEN}${ARCHIVE_SIZE}${NC}"
-echo "${YELLOW}Version:${NC} ${GREEN}${VERSION}${NC}"
+echo "${YELLOW}Directory:${NC} ${GREEN}${DIST_DIR}/${DIST_NAME}/${NC}"
+echo "${YELLOW}Archive:${NC}   ${GREEN}${ARCHIVE_PATH}${NC}"
+echo "${YELLOW}Size:${NC}      ${GREEN}${ARCHIVE_SIZE}${NC}"
+echo "${YELLOW}Version:${NC}   ${GREEN}${VERSION}${NC}"
 echo ""
 echo "${YELLOW}Contents:${NC}"
-tar -tzf "${ARCHIVE_PATH}" | head -20
-echo "..."
+ls -la "${DIST_DIR}/${DIST_NAME}/"
 echo ""
 echo "${YELLOW}To test:${NC}"
-echo "  mkdir /tmp/wpask-test && cd /tmp/wpask-test"
-echo "  tar -xzf ${ARCHIVE_PATH}"
-echo "  cd ${DIST_NAME} && make check"
+echo "  cd ${DIST_DIR}/${DIST_NAME} && make check"
 echo ""
