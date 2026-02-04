@@ -86,9 +86,11 @@ chmod +x "${DIST_DIR}/${DIST_NAME}"/cli/lib/*.sh 2>/dev/null || true
 chmod +x "${DIST_DIR}/${DIST_NAME}/install.sh"
 
 # Create tarball
+# COPYFILE_DISABLE=1 prevents macOS extended attributes (._files, xattr) from being included
+# This avoids "Ignoring unknown extended header keyword" warnings on Linux
 info "Creating archive..."
 cd "${DIST_DIR}"
-tar -czf "${ARCHIVE_NAME}" "${DIST_NAME}"
+COPYFILE_DISABLE=1 tar -czf "${ARCHIVE_NAME}" "${DIST_NAME}"
 
 # Cleanup extracted directory (keep only tarball)
 rm -rf "${DIST_DIR}/${DIST_NAME}"
