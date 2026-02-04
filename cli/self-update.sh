@@ -19,13 +19,13 @@ PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 PRIMARY_SOURCE="https://repo.adjuvans.fr/wpask"
 FALLBACK_SOURCE="https://github.com/adjuvans/wp-adjuvans-starter-kit"
 
-# Colors
+# Colors (bright/pastel variants for better readability)
 if [ -t 1 ]; then
-    RED='\033[0;31m'
-    GREEN='\033[0;32m'
-    YELLOW='\033[0;33m'
-    BLUE='\033[0;34m'
-    CYAN='\033[0;36m'
+    RED='\033[0;91m'
+    GREEN='\033[0;92m'
+    YELLOW='\033[0;93m'
+    BLUE='\033[0;94m'
+    CYAN='\033[0;96m'
     BOLD='\033[1m'
     NC='\033[0m'
 else
