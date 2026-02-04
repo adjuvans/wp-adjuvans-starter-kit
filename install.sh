@@ -222,13 +222,19 @@ post_install() {
 
     info "Setting up permissions..."
 
+    # CRITICAL: Sanitize all permissions first (remove setgid/setuid bits)
+    # This prevents 403 errors on shared hosting (Apache/PHP-FPM like Infomaniak)
+    find "$install_dir" -type d -exec chmod 755 {} \; 2>/dev/null || true
+    find "$install_dir" -type f -exec chmod 644 {} \; 2>/dev/null || true
+
     # Make scripts executable
     chmod +x "$install_dir"/cli/*.sh 2>/dev/null || true
     chmod +x "$install_dir"/cli/lib/*.sh 2>/dev/null || true
     chmod +x "$install_dir"/install.sh 2>/dev/null || true
 
-    # Create directories
+    # Create directories with safe permissions (no setgid)
     mkdir -p "$install_dir/config" "$install_dir/logs" "$install_dir/save" "$install_dir/wordpress"
+    chmod 755 "$install_dir/config" "$install_dir/logs" "$install_dir/save" "$install_dir/wordpress" 2>/dev/null || true
 
     success "Permissions set"
 }

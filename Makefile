@@ -1,7 +1,7 @@
 .PHONY: help check init install install-phpwpinfo backup restore list-backups clean test diagnose-php \
        install-plugins install-themes list-plugins list-themes install-plugin install-theme activate-theme \
        git-setup toolkit-version release-check dist publish security-scan setup-wpscan adopt multisite-install multisite-convert \
-       multisite-status update check-update
+       multisite-status update check-update fix-permissions check-permissions
 
 # Default target
 .DEFAULT_GOAL := help
@@ -168,11 +168,17 @@ lint: ## Check shell scripts for syntax errors
 	done
 	@echo "$(GREEN)✓ All scripts have valid syntax$(NC)"
 
-permissions: ## Fix file permissions
+permissions: ## Fix basic script permissions (use fix-permissions for full fix)
 	@echo "$(BLUE)Fixing file permissions...$(NC)"
 	@chmod +x cli/*.sh cli/lib/*.sh
 	@[ -f config/config.sh ] && chmod 600 config/config.sh || true
 	@echo "$(GREEN)✓ Permissions fixed$(NC)"
+
+fix-permissions: ## Fix ALL permissions for shared hosting (removes setgid/setuid)
+	@./cli/fix-permissions.sh
+
+check-permissions: ## Check for dangerous permissions (setgid/setuid)
+	@./cli/fix-permissions.sh --check
 
 ##@ Cleanup
 

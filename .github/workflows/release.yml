@@ -53,8 +53,18 @@ jobs:
           VERSION="${GITHUB_REF#refs/tags/v}"
           ARCHIVE_NAME="wpask-${VERSION}"
 
+          # CRITICAL: Sanitize permissions before archiving
+          # Remove setgid/setuid bits to prevent 403 errors on shared hosting (Infomaniak, OVH, etc.)
+          echo "Sanitizing file permissions..."
+          find . -type d ! -path './.git/*' -exec chmod 755 {} \; 2>/dev/null || true
+          find . -type f ! -path './.git/*' -exec chmod 644 {} \; 2>/dev/null || true
+          chmod +x cli/*.sh cli/lib/*.sh install.sh 2>/dev/null || true
+
           # Create archive excluding dev files
+          # --no-same-permissions ensures no special bits (setgid/setuid) are preserved
           tar -czvf "${ARCHIVE_NAME}.tar.gz" \
+            --no-same-owner \
+            --no-same-permissions \
             --exclude='.git' \
             --exclude='.github' \
             --exclude='*.log' \

@@ -73,7 +73,14 @@ touch "${DIST_DIR}/${DIST_NAME}/save/.gitkeep"
 touch "${DIST_DIR}/${DIST_NAME}/wordpress/.gitkeep"
 
 # Set permissions
-info "Setting permissions..."
+# CRITICAL: Sanitize all permissions first (remove setgid/setuid bits)
+# This prevents 403 errors on shared hosting (Apache/PHP-FPM like Infomaniak)
+info "Sanitizing permissions (removing setgid/setuid)..."
+find "${DIST_DIR}/${DIST_NAME}" -type d -exec chmod 755 {} \;
+find "${DIST_DIR}/${DIST_NAME}" -type f -exec chmod 644 {} \;
+
+# Re-apply execute bit on scripts
+info "Setting script permissions..."
 chmod +x "${DIST_DIR}/${DIST_NAME}"/cli/*.sh 2>/dev/null || true
 chmod +x "${DIST_DIR}/${DIST_NAME}"/cli/lib/*.sh 2>/dev/null || true
 chmod +x "${DIST_DIR}/${DIST_NAME}/install.sh"
