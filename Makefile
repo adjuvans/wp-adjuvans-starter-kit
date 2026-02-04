@@ -162,10 +162,11 @@ test: ## Run test suite with bats-core
 
 lint: ## Check shell scripts for syntax errors
 	@echo "$(BLUE)Linting shell scripts...$(NC)"
+	@# Use bash -n because scripts use 'local' keyword (portable but not strictly POSIX)
 	@for script in cli/*.sh cli/lib/*.sh; do \
 		if [ -f "$$script" ]; then \
 			echo "Checking $$script..."; \
-			sh -n "$$script" || exit 1; \
+			bash -n "$$script" || exit 1; \
 		fi \
 	done
 	@echo "$(GREEN)✓ All scripts have valid syntax$(NC)"

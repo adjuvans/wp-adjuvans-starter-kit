@@ -40,10 +40,12 @@ jobs:
       - name: Check shell script syntax
         run: |
           echo "Checking shell script syntax..."
+          # Use bash -n because scripts use 'local' keyword (supported by bash, dash, ash)
+          # which is widely portable but not strictly POSIX
           for script in cli/*.sh cli/lib/*.sh; do
             if [ -f "$script" ]; then
               echo "Checking $script..."
-              sh -n "$script" || exit 1
+              bash -n "$script" || exit 1
             fi
           done
           echo "All scripts have valid syntax"
